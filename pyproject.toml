@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arknights-merch-analytics"
+version = "0.1.0"
+description = "Public-content heat analytics and transparent merchandising simulation for Arknights IP"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "ConstantineChenn"}]
+dependencies = [
+  "numpy>=2.0,<3",
+  "pandas>=2.2,<3",
+  "requests>=2.32,<3",
+  "matplotlib>=3.9,<4",
+  "openpyxl>=3.1,<4",
+  "tabulate>=0.9,<1"
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.3,<9", "pytest-cov>=5,<7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q --disable-warnings --maxfail=1"

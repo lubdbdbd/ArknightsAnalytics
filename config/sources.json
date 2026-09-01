@@ -1,0 +1,17 @@
+{
+  "bilibili": {
+    "official_mid": 161775300,
+    "official_name": "明日方舟",
+    "search_queries": [
+      "明日方舟 限定干员 前瞻PV",
+      "明日方舟 干员 前瞻PV",
+      "明日方舟 活动宣传PV",
+      "明日方舟 EP"
+    ],
+    "max_pages_per_query": 4,
+    "page_size": 50,
+    "request_interval_seconds": 1.5,
+    "start_date": "2024-01-01"
+  }
+}
+
