@@ -119,3 +119,187 @@ def build_sku_recommendations(erp: pd.DataFrame) -> pd.DataFrame:
     ).astype(str)
     return frame.sort_values("selection_score", ascending=False).reset_index(drop=True)
 
+
+def _age_days(values: pd.Series, as_of: datetime | None) -> pd.Series:
+    timestamp = pd.Timestamp(as_of or datetime.now().astimezone())
+    published = pd.to_datetime(values, utc=True).dt.tz_convert(timestamp.tz)
+    return ((timestamp - published).dt.total_seconds() / 86400).clip(lower=1)
+
+
+def score_bilibili_posts(videos: pd.DataFrame, as_of: datetime | None = None) -> pd.DataFrame:
+    frame = videos.copy()
+    frame["operator"] = frame["title"].map(extract_operator)
+    frame = frame[frame["operator"].notna()].copy()
+    if frame.empty:
+        return frame
+    age_days = _age_days(frame["published_at"], as_of)
+    view = pd.to_numeric(frame["view"], errors="coerce").fillna(0).clip(lower=1)
+    like = pd.to_numeric(frame["like"], errors="coerce").fillna(0)
+    coin = pd.to_numeric(frame["coin"], errors="coerce").fillna(0)
+    favorite = pd.to_numeric(frame["favorite"], errors="coerce").fillna(0)
+    reply = pd.to_numeric(frame["reply"], errors="coerce").fillna(0)
+    danmaku = pd.to_numeric(frame["danmaku"], errors="coerce").fillna(0)
+    frame["reach_score"] = percentile_score(np.log1p(view))
+    frame["momentum_score"] = percentile_score(np.log1p(view / age_days))
+    frame["engagement_rate"] = (like + 2 * coin + 2 * favorite + 1.5 * reply + 0.5 * danmaku) / view
+    frame["engagement_score"] = percentile_score(frame["engagement_rate"])
+    frame["intent_rate"] = (2 * favorite + coin) / view
+    frame["intent_score"] = percentile_score(frame["intent_rate"])
+    frame["discussion_rate"] = (reply + danmaku) / view
+    frame["discussion_score"] = percentile_score(frame["discussion_rate"])
+    frame["platform_heat_score"] = (
+        0.25 * frame["reach_score"]
+        + 0.25 * frame["momentum_score"]
+        + 0.25 * frame["engagement_score"]
+        + 0.15 * frame["intent_score"]
+        + 0.10 * frame["discussion_score"]
+    )
+    frame["platform"] = "bilibili"
+    return frame
+
+
+def _weibo_operator_mentions(text: str, roster: list[str]) -> list[str]:
+    value = str(text)
+    explicit = re.findall(r"(?:干员)?[「『“\"]([^」』”\"]+)[」』”\"]", value)
+    explicit.extend(re.findall(r"//\s*([^\s，。；：、]{1,16})", value))
+    matches = [name for name in roster if name in explicit]
+    if matches:
+        return matches
+    direct = [name for name in roster if len(name) >= 2 and name in value]
+    return direct[:3] if len(direct) <= 3 else []
+
+
+def score_weibo_posts(
+    posts: pd.DataFrame, roster: list[str], as_of: datetime | None = None
+) -> pd.DataFrame:
+    if posts.empty:
+        return pd.DataFrame()
+    expanded: list[dict[str, object]] = []
+    for _, row in posts.iterrows():
+        for operator in _weibo_operator_mentions(str(row.get("text", "")), roster):
+            item = row.to_dict()
+            item["operator"] = operator
+            expanded.append(item)
+    frame = pd.DataFrame(expanded)
+    if frame.empty:
+        return frame
+    repost = pd.to_numeric(frame["repost"], errors="coerce").fillna(0)
+    comment = pd.to_numeric(frame["comment"], errors="coerce").fillna(0)
+    like = pd.to_numeric(frame["like"], errors="coerce").fillna(0)
+    weighted = 2 * repost + 1.5 * comment + like
+    age_days = _age_days(frame["published_at"], as_of)
+    frame["reach_score"] = percentile_score(np.log1p(weighted))
+    frame["momentum_score"] = percentile_score(np.log1p(weighted / age_days))
+    frame["engagement_score"] = percentile_score(weighted)
+    frame["intent_score"] = percentile_score(repost)
+    frame["discussion_score"] = percentile_score(comment)
+    frame["platform_heat_score"] = (
+        0.30 * frame["reach_score"]
+        + 0.25 * frame["momentum_score"]
+        + 0.20 * percentile_score(repost)
+        + 0.15 * frame["discussion_score"]
+        + 0.10 * percentile_score(like)
+    )
+    frame["platform"] = "weibo"
+    return frame
+
+
+def _aggregate_platform(scored: pd.DataFrame, prefix: str) -> pd.DataFrame:
+    if scored.empty:
+        return pd.DataFrame(
+            columns=[
+                "operator",
+                f"{prefix}_content_count",
+                f"{prefix}_heat",
+                f"{prefix}_reach",
+                f"{prefix}_momentum",
+                f"{prefix}_engagement",
+                f"{prefix}_intent",
+                f"{prefix}_discussion",
+            ]
+        )
+    ordered = scored.sort_values("platform_heat_score", ascending=False).copy()
+    ordered["content_order"] = ordered.groupby("operator").cumcount()
+    top = ordered[ordered["content_order"] < 3]
+    output = top.groupby("operator", as_index=False).agg(
+        **{
+            f"{prefix}_content_count": ("platform_heat_score", "count"),
+            f"{prefix}_heat": ("platform_heat_score", "mean"),
+            f"{prefix}_reach": ("reach_score", "mean"),
+            f"{prefix}_momentum": ("momentum_score", "mean"),
+            f"{prefix}_engagement": ("engagement_score", "mean"),
+            f"{prefix}_intent": ("intent_score", "mean"),
+            f"{prefix}_discussion": ("discussion_score", "mean"),
+        }
+    )
+    return output
+
+
+def build_character_heat_matrix(
+    bilibili_posts: pd.DataFrame,
+    weibo_posts: pd.DataFrame | None = None,
+    as_of: datetime | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    bilibili_scored = score_bilibili_posts(bilibili_posts, as_of=as_of)
+    roster = sorted(bilibili_scored["operator"].dropna().unique().tolist())
+    weibo_scored = score_weibo_posts(
+        weibo_posts if weibo_posts is not None else pd.DataFrame(), roster, as_of=as_of
+    )
+    bilibili_agg = _aggregate_platform(bilibili_scored, "bilibili")
+    weibo_agg = _aggregate_platform(weibo_scored, "weibo")
+    matrix = bilibili_agg.merge(weibo_agg, on="operator", how="left")
+    matrix["weibo_role_data_available"] = matrix["weibo_heat"].notna()
+    matrix["xiaohongshu_role_data_available"] = False
+    matrix["weibo_heat_imputed"] = matrix["weibo_heat"].fillna(50.0)
+    matrix["cross_platform_heat"] = (
+        0.70 * matrix["bilibili_heat"] + 0.30 * matrix["weibo_heat_imputed"]
+    )
+    for dimension in ("reach", "momentum", "engagement", "intent", "discussion"):
+        matrix[f"{dimension}_score"] = (
+            0.70 * matrix[f"bilibili_{dimension}"]
+            + 0.30 * matrix[f"weibo_{dimension}"].fillna(50.0)
+        )
+    matrix["cross_platform_consistency"] = np.where(
+        matrix["weibo_role_data_available"],
+        100 - (matrix["bilibili_heat"] - matrix["weibo_heat"]).abs(),
+        np.nan,
+    )
+    matrix["role_level_platform_coverage"] = (
+        1 + matrix["weibo_role_data_available"].astype(int)
+    ) / 3
+    matrix["confidence_score"] = (
+        45
+        + 20 * matrix["weibo_role_data_available"].astype(int)
+        + 15 * np.minimum(matrix["bilibili_content_count"], 3) / 3
+        + 20 * matrix["role_level_platform_coverage"]
+    ).clip(upper=100)
+    matrix["data_quality_grade"] = pd.cut(
+        matrix["confidence_score"],
+        bins=[-np.inf, 60, 75, 90, np.inf],
+        labels=["D", "C", "B", "A"],
+    ).astype(str)
+    matrix["heat_score"] = matrix["cross_platform_heat"]
+    matrix["evergreen_score"] = 0.60 * matrix["reach_score"] + 0.40 * matrix["engagement_score"]
+    matrix["viral_potential_score"] = (
+        0.60 * matrix["momentum_score"] + 0.40 * matrix["discussion_score"]
+    )
+    matrix["merch_opportunity_score"] = (
+        0.45 * matrix["cross_platform_heat"]
+        + 0.25 * matrix["intent_score"]
+        + 0.15 * matrix["cross_platform_consistency"].fillna(50.0)
+        + 0.15 * matrix["confidence_score"]
+    )
+    matrix["commerce_validation_status"] = np.where(
+        matrix["cross_platform_heat"] >= 60,
+        "优先补充淘宝销量/收藏加购",
+        np.where(matrix["cross_platform_heat"] >= 45, "常规补充商业数据", "低成本观察"),
+    )
+    matrix = matrix.sort_values(
+        ["cross_platform_heat", "confidence_score"], ascending=False
+    ).reset_index(drop=True)
+    matrix["heat_rank"] = np.arange(1, len(matrix) + 1)
+    matrix["platform_gap"] = (
+        matrix["bilibili_heat"] - matrix["weibo_heat"]
+    ).abs()
+    content_scores = pd.concat([bilibili_scored, weibo_scored], ignore_index=True, sort=False)
+    return matrix, content_scores

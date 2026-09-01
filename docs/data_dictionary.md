@@ -43,4 +43,28 @@
 | conversion_rate | 模拟订单转化率 |
 | inventory_risk | 根据滞销与退货风险形成的风险分 |
 | selection_score | 角色热度、转化、毛利、直播适配和库存风险的综合分 |
+# 核心数据字典
 
+## character_heat_matrix.csv
+
+- `cross_platform_heat`：角色综合公开内容热度。
+- `bilibili_heat` / `weibo_heat`：平台内百分位复合分。
+- `reach_score`：传播规模。
+- `momentum_score`：发布时间校正后的传播速度。
+- `engagement_score`：综合互动质量。
+- `intent_score`：收藏、投币和转发等深层互动。
+- `discussion_score`：评论与弹幕讨论强度。
+- `cross_platform_consistency`：平台分差转换的一致性。
+- `confidence_score`：样本量与平台覆盖形成的可信度。
+- `evergreen_score`：长期热度指标。
+- `viral_potential_score`：短期爆发潜力。
+- `merch_opportunity_score`：接入真实电商数据前的内容侧选品候选分。
+- `commerce_validation_status`：后续淘宝数据补充优先级。
+
+## platform_ecosystem.csv
+
+- `scope=brand_ecosystem`：平台整体品牌/话题生态，不代表官方账号单篇数据。
+- `note_count`：公开榜单展示的相关笔记量。
+- `interaction_total`：点赞、收藏、评论合计。
+- `interaction_per_note`：互动总量除以笔记量。
+- `favorite_rate` / `comment_rate`：生态互动结构。

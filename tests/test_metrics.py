@@ -4,7 +4,11 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-from arknights_merch_analytics.metrics import build_operator_heat, extract_operator
+from arknights_merch_analytics.metrics import (
+    build_character_heat_matrix,
+    build_operator_heat,
+    extract_operator,
+)
 
 
 def test_extract_operator_from_official_title() -> None:
@@ -44,3 +48,36 @@ def test_build_operator_heat_is_bounded_and_ranked() -> None:
     assert output.iloc[0]["operator"] == "甲"
     assert output.iloc[0]["heat_rank"] == 1
 
+
+def test_cross_platform_matrix_does_not_match_single_character_common_words() -> None:
+    bilibili = pd.DataFrame(
+        [
+            {
+                "title": "干员「望」前瞻PV",
+                "published_at": "2026-01-01T00:00:00+00:00",
+                "view": 1000,
+                "like": 100,
+                "coin": 20,
+                "favorite": 30,
+                "share": 10,
+                "reply": 10,
+                "danmaku": 10,
+            }
+        ]
+    )
+    weibo = pd.DataFrame(
+        [
+            {
+                "text": "希望和愿望都会实现",
+                "published_at": "2026-01-02T00:00:00+00:00",
+                "repost": 100,
+                "comment": 50,
+                "like": 500,
+            }
+        ]
+    )
+    matrix, content = build_character_heat_matrix(
+        bilibili, weibo, as_of=datetime(2026, 2, 1, tzinfo=timezone.utc)
+    )
+    assert not matrix.iloc[0]["weibo_role_data_available"]
+    assert set(content["platform"]) == {"bilibili"}

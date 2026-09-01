@@ -45,6 +45,5 @@ def test_exports_sqlite_and_reports(tmp_path) -> None:
     workbook_path = tmp_path / "dashboard.xlsx"
     write_report(heat, sku, report_path)
     write_workbook(heat, erp, sku, workbook_path)
-    assert "识别角色数：1" in report_path.read_text(encoding="utf-8")
+    assert "角色榜单规模：1" in report_path.read_text(encoding="utf-8")
     assert workbook_path.exists()
-

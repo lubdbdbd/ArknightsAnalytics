@@ -3,8 +3,10 @@ SELECT
     heat_rank,
     operator,
     ROUND(heat_score, 2) AS heat_score,
-    total_views,
-    ROUND(engagement_rate * 100, 2) AS engagement_rate_pct
+    ROUND(reach_score, 2) AS reach_score,
+    ROUND(engagement_score, 2) AS engagement_score,
+    ROUND(confidence_score, 2) AS confidence_score,
+    data_quality_grade
 FROM operator_heat
 ORDER BY heat_rank;
 
@@ -52,3 +54,52 @@ WHERE recommendation = '重点推荐'
   AND live_fit >= 0.80
 ORDER BY selection_score DESC;
 
+-- 5. 跨平台角色热度矩阵
+SELECT
+    heat_rank,
+    operator,
+    ROUND(cross_platform_heat, 2) AS cross_platform_heat,
+    ROUND(bilibili_heat, 2) AS bilibili_heat,
+    ROUND(weibo_heat, 2) AS weibo_heat,
+    ROUND(cross_platform_consistency, 2) AS consistency,
+    ROUND(confidence_score, 2) AS confidence_score,
+    data_quality_grade
+FROM operator_heat
+ORDER BY heat_rank;
+
+-- 6. 高热度但低置信度：优先补采淘宝或其他平台数据
+SELECT
+    operator,
+    ROUND(cross_platform_heat, 2) AS cross_platform_heat,
+    ROUND(confidence_score, 2) AS confidence_score,
+    ROUND(merch_opportunity_score, 2) AS merch_opportunity_score,
+    commerce_validation_status,
+    data_quality_grade
+FROM operator_heat
+WHERE cross_platform_heat >= 55
+  AND confidence_score < 70
+ORDER BY merch_opportunity_score DESC;
+
+-- 7. 平台分歧：识别单平台爆发与跨平台稳定角色
+SELECT
+    operator,
+    ROUND(bilibili_heat, 2) AS bilibili_heat,
+    ROUND(weibo_heat, 2) AS weibo_heat,
+    ROUND(ABS(bilibili_heat - weibo_heat), 2) AS platform_gap,
+    ROUND(evergreen_score, 2) AS evergreen_score,
+    ROUND(viral_potential_score, 2) AS viral_potential
+FROM operator_heat
+WHERE weibo_role_data_available = 1
+ORDER BY platform_gap DESC;
+
+-- 8. 小红书品牌生态快照；统计窗口不同，只做独立观察
+SELECT
+    snapshot_date,
+    window,
+    rank AS brand_rank,
+    note_count,
+    interaction_total,
+    ROUND(interaction_per_note, 2) AS interactions_per_note
+FROM xiaohongshu_ecosystem
+WHERE platform = 'xiaohongshu'
+ORDER BY snapshot_date;

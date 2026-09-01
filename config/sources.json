@@ -11,7 +11,40 @@
     "max_pages_per_query": 4,
     "page_size": 50,
     "request_interval_seconds": 1.5,
-    "start_date": "2024-01-01"
+    "start_date": "2022-01-01",
+    "related_max_official_videos": 450,
+    "related_max_requests": 260
+  },
+  "weibo": {
+    "official_uid": "6279793937",
+    "official_name": "明日方舟Arknights",
+    "canonical_url": "https://weibo.com/arknights",
+    "public_mirror_url": "https://www.sina.cn/media/6279793937"
+  },
+  "xiaohongshu": {
+    "scope": "brand_ecosystem_only",
+    "role_level_official_api_available": false,
+    "brand_snapshot_pages": [
+      {
+        "window": "monthly",
+        "snapshot_date": "2026-01-01",
+        "url": "https://www.qian-gua.com/rank/branddata/51/30/20260101/0.html"
+      },
+      {
+        "window": "monthly",
+        "snapshot_date": "2026-06-01",
+        "url": "https://www.qian-gua.com/rank/branddata/49/30/20260601/0.html"
+      },
+      {
+        "window": "weekly",
+        "snapshot_date": "2026-08-09",
+        "url": "https://www.qian-gua.com/rank/branddata/50/7/20260809/"
+      },
+      {
+        "window": "daily",
+        "snapshot_date": "2026-08-18",
+        "url": "https://www.qian-gua.com/rank/branddata/50/1/20260818/0.html"
+      }
+    ]
   }
 }
-

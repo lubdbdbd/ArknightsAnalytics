@@ -12,6 +12,8 @@ def export_sqlite(
     erp: pd.DataFrame,
     sku: pd.DataFrame,
     output_path: Path,
+    content_scores: pd.DataFrame | None = None,
+    xhs_snapshots: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(output_path) as connection:
@@ -19,6 +21,10 @@ def export_sqlite(
         operator_heat.to_sql("operator_heat", connection, if_exists="replace", index=False)
         erp.to_sql("erp_mock", connection, if_exists="replace", index=False)
         sku.to_sql("sku_recommendations", connection, if_exists="replace", index=False)
+        if content_scores is not None and not content_scores.empty:
+            content_scores.to_sql("official_content_scores", connection, if_exists="replace", index=False)
+        if xhs_snapshots is not None and not xhs_snapshots.empty:
+            xhs_snapshots.to_sql("xiaohongshu_ecosystem", connection, if_exists="replace", index=False)
         connection.executescript(
             """
             CREATE INDEX IF NOT EXISTS idx_public_videos_bvid ON public_videos(bvid);
@@ -27,4 +33,3 @@ def export_sqlite(
             CREATE INDEX IF NOT EXISTS idx_sku_score ON sku_recommendations(selection_score DESC);
             """
         )
-
