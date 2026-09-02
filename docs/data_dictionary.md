@@ -98,3 +98,22 @@
 - `business_quadrant`：核心商业角色、内容热但供给待验证、内容长尾但商品信号强、低成本观察。
 - `content_commerce_gap`：内容热度减商业信号，正值较大表示存在商业验证缺口。
 - `commercial_validation_priority`：内容热度、深层互动、商业缺口和低置信度共同形成的补采优先级。
+
+## SQL 业务视图
+
+- `vw_role_commercial_dashboard`：角色内容热度、商业信号、数据置信度、验证队列及运营动作。
+- `vw_sku_portfolio_rank`：SKU 的角色内排名、品类内排名、品类百分位、风险等级和组合定位。
+- `vw_category_operations`：按品类聚合的加权转化率、售罄率、退货率、模拟毛利及库存风险。
+- `vw_taobao_listing_quality`：淘宝商品的跨 IP、相关性、销量可用性、截断状态与时间序列准入标签。
+- `vw_taobao_category_market`：淘宝品类价格、销量代理、正版/同人、预售与履约服务结构。
+
+## SQL 自动导出结果
+
+- `sql_role_decision_board.csv`：商业验证优先级最高的角色及建议动作。
+- `sql_category_operations.csv`：品类经营漏斗与模拟利润表现。
+- `sql_top_sku_portfolio.csv`：每名角色的 Top SKU 组合。
+- `sql_taobao_quality_audit.csv`：公开商品快照的数据质量审计。
+- `sql_taobao_category_market.csv`：淘宝品类市场结构。
+- `sql_price_band_structure.csv`：入门、主力、中高客单和高客单价格带。
+- `sql_inventory_risk_queue.csv`：每个品类的库存风险优先处理队列。
+- `sql_index_plan_audit.csv`：使用 `EXPLAIN QUERY PLAN` 验证复合索引命中的执行计划。

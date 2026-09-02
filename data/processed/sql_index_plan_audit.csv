@@ -1,0 +1,2 @@
+﻿id,parent,notused,detail
+3,0,59,SEARCH taobao_public_snapshots USING INDEX idx_taobao_scope_ip_category (query_scope=? AND ip_scope=? AND category=?)

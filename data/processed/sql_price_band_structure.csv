@@ -1,0 +1,5 @@
+﻿price_band,sku_count,avg_price,sales_proxy_lower_bound,official_share_pct,presale_share_pct
+入门款(<20元),12,11.79,1482.0,8.33,0.0
+主力款(20-49元),6,32.2,973.0,16.67,0.0
+中高客单(50-99元),1,69.0,200.0,100.0,0.0
+高客单(>=100元),7,128.0,696.0,100.0,85.71

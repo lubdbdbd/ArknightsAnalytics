@@ -1,0 +1,5 @@
+﻿listing_quality_status,listing_count,listing_share_pct,trackable_count,sales_proxy_lower_bound
+可稳定分析,36,42.86,36,680.0
+销量档位截断,21,25.0,21,2900.0
+目标角色不相关,14,16.67,0,144.0
+跨IP排除,13,15.48,0,775.0

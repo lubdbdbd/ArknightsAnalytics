@@ -53,6 +53,12 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\run_pipeline.py
 ```
 
+只需要基于现有 SQLite 数据库刷新 SQL 运营分析时，可运行：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_sql_analysis.py
+```
+
 ## 主要输出
 
 - `data/processed/character_heat_matrix.csv`：角色跨平台热度及多维特征
@@ -67,11 +73,13 @@ py -3.12 -m venv .venv
 - `data/processed/sku_recommendations.csv`：SKU 选品评分
 - `reports/generated/analysis_report.md`：自动生成的分析报告
 - `reports/generated/taobao_commerce_report.md`：淘宝商业化运营分析报告
+- `reports/generated/sql_analysis_report.md`：由 SQLite 视图与分析 SQL 自动生成的运营报告
 - `reports/generated/operations_dashboard.xlsx`：运营结果工作簿
 - `reports/generated/operations.db`：可直接执行分析 SQL 的 SQLite 数据库
 - `reports/figures/`：核心可视化
 
-SQL 示例位于 `sql/analysis_queries.sql`，字段定义见 `docs/data_dictionary.md`。
+SQL 资产包括 `sql/business_views.sql` 中的 5 个可复用业务视图，以及
+`sql/analysis_queries.sql` 中覆盖角色决策、价格带、品类漏斗、市场集中度、库存风险和数据质量审计的 20 组查询；字段定义见 `docs/data_dictionary.md`。
 
 ## 数据合规
 

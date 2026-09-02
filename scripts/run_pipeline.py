@@ -20,6 +20,7 @@ from arknights_merch_analytics.commerce import (
     load_taobao_snapshots,
 )
 from arknights_merch_analytics.database import export_sqlite
+from arknights_merch_analytics.sql_reporting import build_sql_analysis_outputs
 from arknights_merch_analytics.reporting import (
     save_commerce_figures,
     save_figures,
@@ -131,6 +132,11 @@ def main() -> None:
         taobao_market_signals,
         content_commerce,
         targeted_query_summary,
+    )
+    build_sql_analysis_outputs(
+        ROOT / "reports" / "generated" / "operations.db",
+        processed,
+        ROOT / "reports" / "generated" / "sql_analysis_report.md",
     )
     print(
         f"Pipeline completed with {len(operator_heat)} operators, "

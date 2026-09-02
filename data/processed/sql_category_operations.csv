@@ -1,0 +1,7 @@
+﻿category,sku_count,operator_count,avg_price,avg_margin_pct,simulated_gmv,simulated_gross_profit,weighted_conversion_pct,weighted_sell_through_pct,weighted_return_pct,avg_inventory_risk,priority_sku_count,live_ready_sku_count,high_production_risk_count
+手办,30,30,699.0,38.0,5562642.0,2113803.96,6.58,72.54,7.85,91.05,0,0,30
+服饰,30,30,229.0,48.0,2234811.0,1072709.28,6.86,75.42,6.63,75.48,0,0,30
+毛绒,30,30,128.0,52.0,1729664.0,899425.28,7.75,79.6,4.94,58.22,0,30,0
+亚克力立牌,30,30,48.0,65.0,663312.0,431152.8,7.86,84.27,3.51,39.78,1,30,0
+色纸,30,30,30.0,72.0,362610.0,261079.2,7.45,86.87,2.55,15.35,4,0,0
+徽章,30,30,18.0,70.0,273384.0,191368.8,8.03,86.84,2.73,19.94,9,30,0

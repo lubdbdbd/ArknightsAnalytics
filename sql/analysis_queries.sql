@@ -143,3 +143,155 @@ WHERE query_scope = 'market_baseline'
   AND ip_scope = 'arknights'
 GROUP BY category
 ORDER BY displayed_recipient_lower_bound DESC;
+
+-- 12. 角色商业验证决策看板：JOIN 后的内容、商业与证据风险
+SELECT
+    validation_queue_rank,
+    operator,
+    content_heat,
+    commercial_heat,
+    content_commerce_gap,
+    business_quadrant,
+    recommended_action,
+    evidence_risk
+FROM vw_role_commercial_dashboard
+ORDER BY validation_queue_rank
+LIMIT 15;
+
+-- 13. 每名角色的 Top 2 SKU：窗口函数避免全局排名挤压长尾角色
+SELECT
+    operator,
+    operator_sku_rank,
+    sku_id,
+    category,
+    ROUND(selection_score, 2) AS selection_score,
+    risk_tier,
+    portfolio_role
+FROM vw_sku_portfolio_rank
+WHERE operator_sku_rank <= 2
+ORDER BY selection_score DESC;
+
+-- 14. 品类经营漏斗：使用加权口径而不是简单平均
+SELECT
+    category,
+    sku_count,
+    operator_count,
+    weighted_conversion_pct,
+    weighted_sell_through_pct,
+    weighted_return_pct,
+    simulated_gross_profit,
+    avg_inventory_risk,
+    priority_sku_count
+FROM vw_category_operations
+ORDER BY simulated_gross_profit DESC;
+
+-- 15. 淘宝价格带结构：CTE + CASE WHEN + 条件聚合
+WITH priced AS (
+    SELECT
+        CASE
+            WHEN price < 20 THEN '入门款(<20元)'
+            WHEN price < 50 THEN '主力款(20-49元)'
+            WHEN price < 100 THEN '中高客单(50-99元)'
+            ELSE '高客单(>=100元)'
+        END AS price_band,
+        item_id,
+        price,
+        sales_proxy_min,
+        rights_type,
+        fulfillment_type
+    FROM taobao_public_snapshots
+    WHERE query_scope = 'market_baseline'
+      AND ip_scope = 'arknights'
+)
+SELECT
+    price_band,
+    COUNT(DISTINCT item_id) AS sku_count,
+    ROUND(AVG(price), 2) AS avg_price,
+    ROUND(SUM(sales_proxy_min), 2) AS sales_proxy_lower_bound,
+    ROUND(AVG(CASE WHEN rights_type IN ('官方/授权', 'official_or_licensed') THEN 1.0 ELSE 0.0 END) * 100, 2)
+        AS official_share_pct,
+    ROUND(AVG(CASE WHEN fulfillment_type IN ('预售/补款', 'presale_or_balance') THEN 1.0 ELSE 0.0 END) * 100, 2)
+        AS presale_share_pct
+FROM priced
+GROUP BY price_band
+ORDER BY avg_price;
+
+-- 16. 正版/同人 × 履约方式交叉分析
+SELECT
+    rights_type,
+    fulfillment_type,
+    COUNT(DISTINCT item_id) AS sku_count,
+    ROUND(AVG(price), 2) AS avg_price,
+    ROUND(SUM(sales_proxy_min), 2) AS sales_proxy_lower_bound,
+    ROUND(AVG(free_shipping) * 100, 2) AS free_shipping_rate_pct,
+    ROUND(AVG(return_insurance) * 100, 2) AS return_insurance_rate_pct
+FROM taobao_public_snapshots
+WHERE ip_scope = 'arknights'
+GROUP BY rights_type, fulfillment_type
+ORDER BY sales_proxy_lower_bound DESC;
+
+-- 17. 数据质量审计：确认多少商品能进入固定 SKU 时间序列
+SELECT
+    listing_quality_status,
+    COUNT(*) AS listing_count,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS listing_share_pct,
+    SUM(trackable_for_timeseries) AS trackable_count
+FROM vw_taobao_listing_quality
+GROUP BY listing_quality_status
+ORDER BY listing_count DESC;
+
+-- 18. 市场集中度：计算销量代理 Top 10 占比
+WITH ranked AS (
+    SELECT
+        item_id,
+        sales_proxy_min,
+        ROW_NUMBER() OVER (ORDER BY sales_proxy_min DESC, rank) AS sales_rank,
+        SUM(sales_proxy_min) OVER () AS total_sales_proxy
+    FROM taobao_public_snapshots
+    WHERE query_scope = 'market_baseline'
+      AND ip_scope = 'arknights'
+), concentration AS (
+    SELECT
+        SUM(CASE WHEN sales_rank <= 10 THEN sales_proxy_min ELSE 0 END) AS top10_sales_proxy,
+        MAX(total_sales_proxy) AS total_sales_proxy
+    FROM ranked
+)
+SELECT
+    ROUND(top10_sales_proxy, 2) AS top10_sales_proxy,
+    ROUND(total_sales_proxy, 2) AS total_sales_proxy,
+    ROUND(100.0 * top10_sales_proxy / NULLIF(total_sales_proxy, 0), 2) AS top10_concentration_pct
+FROM concentration;
+
+-- 19. 分品类库存风险队列：每个品类保留风险最高的 3 个 SKU
+WITH risk_ranked AS (
+    SELECT
+        sku_id,
+        operator,
+        category,
+        ROUND(inventory_risk, 2) AS inventory_risk,
+        ROUND(return_rate * 100, 2) AS return_rate_pct,
+        risk_tier,
+        ROW_NUMBER() OVER (
+            PARTITION BY category
+            ORDER BY inventory_risk DESC, return_rate DESC
+        ) AS category_risk_rank
+    FROM vw_sku_portfolio_rank
+)
+SELECT *
+FROM risk_ranked
+WHERE category_risk_rank <= 3
+ORDER BY inventory_risk DESC;
+
+-- 20. 商业分高于内容分的角色：检查圈层购买力或活动影响
+SELECT
+    operator,
+    content_heat,
+    commercial_heat,
+    ROUND(commercial_heat - content_heat, 2) AS commerce_over_content,
+    organic_sku_count,
+    sales_proxy_min,
+    recommended_action
+FROM vw_role_commercial_dashboard
+WHERE taobao_observed = 1
+  AND commercial_heat > content_heat
+ORDER BY commerce_over_content DESC;
