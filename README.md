@@ -72,6 +72,12 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\run_pipeline.py
 ```
 
+项目已提供可直接部署到问卷平台的28题衍生品用户调研、三阶段样本方案和机器可读配置：
+
+- `docs/derivative_merch_user_questionnaire.md`
+- `config/survey_questionnaire.json`
+- `data/manual/survey_template.csv`
+
 只需要基于现有 SQLite 数据库刷新 SQL 运营分析时，可运行：
 
 ```powershell
@@ -96,6 +102,9 @@ py -3.12 -m venv .venv
 - `data/processed/sku_timeseries_metrics.csv`：价格、销量代理、排名变化和时间序列证据等级
 - `data/processed/survey_response_audit.csv`：匿名问卷有效性及排除原因
 - `data/processed/survey_operator_category_summary.csv`：角色 × 品类购买意愿和价格接受度
+- `data/processed/survey_segment_summary.csv`：核心购买者、偶发购买者、潜在购买者与观察者分群
+- `data/processed/survey_barrier_summary.csv`：购买阻力人数与占比
+- `data/processed/survey_price_summary.csv`：方向性价格区间及可接受价格四分位
 - `data/processed/selection_case_evidence.csv`：选品案例的六层证据门禁
 - `data/processed/operator_heat.csv`：兼容旧分析链路的角色热度表
 - `data/processed/erp_mock.csv`：明确标注的模拟 ERP 明细

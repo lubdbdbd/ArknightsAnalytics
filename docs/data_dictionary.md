@@ -154,6 +154,24 @@
 - `prior_buyer_share`：既往周边购买者占比。
 - `survey_evidence_grade`：样本量证据等级；少于 30 人不能用于方向决策。
 
+## survey_segment_summary.csv
+
+- `user_segment`：核心购买者、偶发购买者、潜在购买者或观察者。
+- `respondent_share`：该分群占有效匿名受访者的比例，不代表全体玩家人口比例。
+- `annual_merch_spend_median` / `monthly_budget_median`：历史年消费与未来月度预算中位数。
+- `preorder_tolerance_days_median`：可接受预售等待时间中位数。
+
+## survey_barrier_summary.csv
+
+- `purchase_barrier`：价格、设计、品质、预售、运费、售后等购买阻力。
+- `respondent_count` / `respondent_share`：提及该阻力的去重人数及在有效受访者中的占比。
+
+## survey_price_summary.csv
+
+- `acceptable_price_p25/p50/p75`：最高可接受价格的四分位分布。
+- `good_value_price_median` / `expensive_price_median`：价格阶梯中的合适价格与偏贵价格中位数。
+- `directional_price_floor/ceiling`：用于小批量概念验证的方向性区间，不等于正式成交定价。
+
 ## selection_case_evidence.csv
 
 - `evidence_layer`：内容热度、深层意向、搜索质量、需求代理、固定 SKU 和用户调研。

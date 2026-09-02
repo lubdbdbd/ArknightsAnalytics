@@ -42,6 +42,9 @@ from arknights_merch_analytics.reporting import (
 )
 from arknights_merch_analytics.simulation import simulate_erp
 from arknights_merch_analytics.survey import (
+    build_survey_barrier_summary,
+    build_survey_price_summary,
+    build_survey_segment_summary,
     build_survey_summary,
     validate_survey_responses,
     write_survey_report,
@@ -126,6 +129,9 @@ def main() -> None:
     else:
         survey_valid, survey_audit = validate_survey_responses(raw_survey)
     survey_summary = build_survey_summary(survey_valid)
+    survey_segment_summary = build_survey_segment_summary(survey_valid)
+    survey_barrier_summary = build_survey_barrier_summary(survey_valid)
+    survey_price_summary = build_survey_price_summary(survey_valid)
     selection_case_evidence = pd.DataFrame()
     selection_case_categories = pd.DataFrame()
     if not content_commerce.empty and args.case_operator in set(content_commerce["operator"]):
@@ -162,6 +168,9 @@ def main() -> None:
         timeseries_metrics.to_csv(processed / "sku_timeseries_metrics.csv", index=False, encoding="utf-8-sig")
     survey_audit.to_csv(processed / "survey_response_audit.csv", index=False, encoding="utf-8-sig")
     survey_summary.to_csv(processed / "survey_operator_category_summary.csv", index=False, encoding="utf-8-sig")
+    survey_segment_summary.to_csv(processed / "survey_segment_summary.csv", index=False, encoding="utf-8-sig")
+    survey_barrier_summary.to_csv(processed / "survey_barrier_summary.csv", index=False, encoding="utf-8-sig")
+    survey_price_summary.to_csv(processed / "survey_price_summary.csv", index=False, encoding="utf-8-sig")
     if not selection_case_evidence.empty:
         selection_case_evidence.to_csv(processed / "selection_case_evidence.csv", index=False, encoding="utf-8-sig")
         selection_case_categories.to_csv(processed / "selection_case_categories.csv", index=False, encoding="utf-8-sig")
@@ -206,6 +215,9 @@ def main() -> None:
         survey_audit,
         survey_summary,
         ROOT / "reports" / "generated" / "user_research_report.md",
+        survey_segment_summary,
+        survey_barrier_summary,
+        survey_price_summary,
     )
     if not selection_case_evidence.empty:
         write_selection_case_report(
@@ -237,6 +249,9 @@ def main() -> None:
         bilibili_campaign_summary,
         bilibili_content_types,
         bilibili_yearly_summary,
+        survey_segment_summary,
+        survey_barrier_summary,
+        survey_price_summary,
     )
     export_sqlite(
         videos,
@@ -261,6 +276,9 @@ def main() -> None:
         bilibili_campaign_summary,
         bilibili_content_types,
         bilibili_yearly_summary,
+        survey_segment_summary,
+        survey_barrier_summary,
+        survey_price_summary,
     )
     build_sql_analysis_outputs(
         ROOT / "reports" / "generated" / "operations.db",

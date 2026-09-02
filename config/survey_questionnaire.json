@@ -1,0 +1,66 @@
+{
+  "questionnaire_id": "arknights_merch_demand_v2",
+  "version": "2.0",
+  "target_population": "年满18周岁的明日方舟玩家或IP衍生品潜在消费者",
+  "estimated_minutes": 6,
+  "sections": [
+    {
+      "id": "screening",
+      "title": "知情同意与筛选",
+      "questions": [
+        {"id": "consent", "type": "single", "required": true, "options": ["同意", "不同意"]},
+        {"id": "age_band", "type": "single", "required": true, "options": ["18-24", "25-30", "31-35", "36及以上"]},
+        {"id": "player_tenure_months", "type": "number", "required": true, "range": [0, 120]},
+        {"id": "activity_days_30d", "type": "number", "required": true, "range": [0, 30]}
+      ]
+    },
+    {
+      "id": "behavior",
+      "title": "周边消费行为",
+      "questions": [
+        {"id": "has_purchased_merch", "type": "single", "required": true, "options": ["是", "否"]},
+        {"id": "purchase_frequency_12m", "type": "number", "required": true, "range": [0, 100]},
+        {"id": "annual_merch_spend", "type": "number", "required": true, "range": [0, 100000]},
+        {"id": "monthly_merch_budget", "type": "number", "required": true, "range": [0, 10000]},
+        {"id": "channel", "type": "single", "required": true, "randomize": true, "options": ["官方商城", "淘宝", "B站会员购", "直播间", "线下展会", "其他"]},
+        {"id": "purchase_motivation", "type": "multi", "required": true, "max_choices": 3, "randomize": true},
+        {"id": "purchase_barrier", "type": "multi", "required": true, "max_choices": 3, "randomize": true}
+      ]
+    },
+    {
+      "id": "demand",
+      "title": "角色与品类需求",
+      "questions": [
+        {"id": "preferred_operators", "type": "rank", "required": true, "max_choices": 3, "randomize": true},
+        {"id": "category", "type": "single", "required": true, "randomize": true},
+        {"id": "purchase_intent", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "limited_preference", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "preorder_tolerance_days", "type": "number", "required": true, "range": [0, 365]}
+      ]
+    },
+    {
+      "id": "concept_price",
+      "title": "商品概念与价格测试",
+      "questions": [
+        {"id": "concept_appeal", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "concept_uniqueness", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "authenticity_importance", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "design_importance", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "practicality_importance", "type": "scale", "required": true, "range": [1, 5]},
+        {"id": "price_too_cheap", "type": "number", "required": true, "range": [1, 5000]},
+        {"id": "price_good_value", "type": "number", "required": true, "range": [1, 5000]},
+        {"id": "price_expensive", "type": "number", "required": true, "range": [1, 5000]},
+        {"id": "price_too_expensive", "type": "number", "required": true, "range": [1, 5000]},
+        {"id": "acceptable_price", "type": "number", "required": true, "range": [1, 5000]}
+      ]
+    },
+    {
+      "id": "quality_feedback",
+      "title": "质量检查与开放反馈",
+      "questions": [
+        {"id": "attention_check", "type": "single", "required": true, "expected": "通过"},
+        {"id": "open_feedback", "type": "text", "required": false, "max_length": 500}
+      ]
+    }
+  ]
+}

@@ -255,6 +255,9 @@ def write_workbook(
     bilibili_campaign_summary: pd.DataFrame | None = None,
     bilibili_content_types: pd.DataFrame | None = None,
     bilibili_yearly_summary: pd.DataFrame | None = None,
+    survey_segment_summary: pd.DataFrame | None = None,
+    survey_barrier_summary: pd.DataFrame | None = None,
+    survey_price_summary: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
@@ -279,6 +282,12 @@ def write_workbook(
             survey_audit.to_excel(writer, sheet_name="Survey Audit", index=False)
         if survey_summary is not None:
             survey_summary.to_excel(writer, sheet_name="Survey Summary", index=False)
+        if survey_segment_summary is not None:
+            survey_segment_summary.to_excel(writer, sheet_name="Survey Segments", index=False)
+        if survey_barrier_summary is not None:
+            survey_barrier_summary.to_excel(writer, sheet_name="Survey Barriers", index=False)
+        if survey_price_summary is not None:
+            survey_price_summary.to_excel(writer, sheet_name="Survey Price", index=False)
         if selection_case_evidence is not None and not selection_case_evidence.empty:
             selection_case_evidence.to_excel(writer, sheet_name="Case Evidence", index=False)
         if selection_case_categories is not None and not selection_case_categories.empty:

@@ -32,6 +32,9 @@ def export_sqlite(
     bilibili_campaign_summary: pd.DataFrame | None = None,
     bilibili_content_types: pd.DataFrame | None = None,
     bilibili_yearly_summary: pd.DataFrame | None = None,
+    survey_segment_summary: pd.DataFrame | None = None,
+    survey_barrier_summary: pd.DataFrame | None = None,
+    survey_price_summary: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(output_path) as connection:
@@ -59,6 +62,12 @@ def export_sqlite(
             survey_audit.to_sql("survey_response_audit", connection, if_exists="replace", index=False)
         if survey_summary is not None:
             survey_summary.to_sql("survey_operator_category_summary", connection, if_exists="replace", index=False)
+        if survey_segment_summary is not None:
+            survey_segment_summary.to_sql("survey_segment_summary", connection, if_exists="replace", index=False)
+        if survey_barrier_summary is not None:
+            survey_barrier_summary.to_sql("survey_barrier_summary", connection, if_exists="replace", index=False)
+        if survey_price_summary is not None:
+            survey_price_summary.to_sql("survey_price_summary", connection, if_exists="replace", index=False)
         if selection_case_evidence is not None and not selection_case_evidence.empty:
             selection_case_evidence.to_sql("selection_case_evidence", connection, if_exists="replace", index=False)
         if selection_case_categories is not None and not selection_case_categories.empty:
