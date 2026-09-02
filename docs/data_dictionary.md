@@ -99,6 +99,44 @@
 - `content_commerce_gap`：内容热度减商业信号，正值较大表示存在商业验证缺口。
 - `commercial_validation_priority`：内容热度、深层互动、商业缺口和低置信度共同形成的补采优先级。
 
+## sku_tracking_registry.csv
+
+- `item_id`：固定追踪的商品主键。
+- `first_seen_at` / `snapshot_at`：第一次与最近一次公开观察时间。
+- `observation_count`：去除同日重复后的有效采样期数。
+- `next_capture_due`：按 7 天周期计算的下次复采日期。
+- `tracking_status`：`baseline_pending_recapture` 或 `tracking_active`。
+- `sales_metric_note`：区分公开代理与档位截断下界。
+
+## sku_timeseries_metrics.csv
+
+- `price_delta` / `price_change_rate`：首末期价格变化。
+- `sales_proxy_delta`：公开收货人数下界的首末期差值。
+- `sales_proxy_delta_per_day`：跨期下界增量除以观察天数，仅作增长代理。
+- `rank_improvement`：首期排名减末期排名，正值表示公开搜索位置改善。
+- `lifecycle_signal`：基线待复采、增长、稳定、数据异常或信号不足。
+- `timeseries_evidence_grade`：D/C/B/A 对应 1 期、2 期 7 天、3 期 14 天和 4 期 21 天。
+
+## survey_response_audit.csv
+
+- `valid`：是否通过知情同意、完成时间、注意力检查和字段范围门禁。
+- `exclusion_reason`：无同意、过快、注意力失败、重复或非法字段等排除原因。
+
+## survey_operator_category_summary.csv
+
+- `respondent_count`：角色 × 品类细分的有效匿名受访者数。
+- `purchase_intent_mean` / `high_intent_share`：平均购买意愿及 4～5 分占比。
+- `acceptable_price_median` / `p25` / `p75`：价格接受度分布。
+- `prior_buyer_share`：既往周边购买者占比。
+- `survey_evidence_grade`：样本量证据等级；少于 30 人不能用于方向决策。
+
+## selection_case_evidence.csv
+
+- `evidence_layer`：内容热度、深层意向、搜索质量、需求代理、固定 SKU 和用户调研。
+- `threshold` / `gate_passed`：预先定义的门槛及通过状态。
+- `data_type`：真实公开聚合、公开下界、真实纵向数据或真实匿名问卷。
+- `case_status`：`conditional_pilot` 或 `validated_candidate`。
+
 ## SQL 业务视图
 
 - `vw_role_commercial_dashboard`：角色内容热度、商业信号、数据置信度、验证队列及运营动作。

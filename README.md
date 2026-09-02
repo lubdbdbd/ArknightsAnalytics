@@ -53,6 +53,19 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\run_pipeline.py
 ```
 
+也可以直接从固定商品注册表导出到期复采队列：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\export_sku_recapture_queue.py --operator 新约能天使 --limit 30
+```
+
+真实匿名问卷导出后，先执行质量校验和去标识化导入，再刷新流水线：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\import_survey_responses.py path\to\survey_export.csv
+.\.venv\Scripts\python.exe scripts\run_pipeline.py
+```
+
 只需要基于现有 SQLite 数据库刷新 SQL 运营分析时，可运行：
 
 ```powershell
@@ -68,11 +81,19 @@ py -3.12 -m venv .venv
 - `data/processed/taobao_role_signals.csv`：全 IP 自然销量页的角色商业信号
 - `data/processed/content_commerce_matrix.csv`：内容热度 × 商业热度及验证优先级
 - `data/processed/taobao_target_query_qa.csv`：定向搜索相关率、价格带和集中度
+- `data/processed/sku_tracking_registry.csv`：固定商品 ID、基线值和下一次复采日期
+- `data/processed/sku_timeseries_metrics.csv`：价格、销量代理、排名变化和时间序列证据等级
+- `data/processed/survey_response_audit.csv`：匿名问卷有效性及排除原因
+- `data/processed/survey_operator_category_summary.csv`：角色 × 品类购买意愿和价格接受度
+- `data/processed/selection_case_evidence.csv`：选品案例的六层证据门禁
 - `data/processed/operator_heat.csv`：兼容旧分析链路的角色热度表
 - `data/processed/erp_mock.csv`：明确标注的模拟 ERP 明细
 - `data/processed/sku_recommendations.csv`：SKU 选品评分
 - `reports/generated/analysis_report.md`：自动生成的分析报告
 - `reports/generated/taobao_commerce_report.md`：淘宝商业化运营分析报告
+- `reports/generated/sku_timeseries_report.md`：固定 SKU 周期复采状态与证据等级
+- `reports/generated/user_research_report.md`：真实匿名用户调研质量与结果
+- `reports/generated/selection_case_study.md`：新约能天使可验证选品案例
 - `reports/generated/sql_analysis_report.md`：由 SQLite 视图与分析 SQL 自动生成的运营报告
 - `reports/generated/operations_dashboard.xlsx`：运营结果工作簿
 - `reports/generated/operations.db`：可直接执行分析 SQL 的 SQLite 数据库
@@ -83,6 +104,10 @@ SQL 资产包括 `sql/business_views.sql` 中的 5 个可复用业务视图，�
 
 面试准备、岗位能力地图、项目拷打题和专业化迭代路线见
 `docs/commercial_operations_interview_guide.md`。
+
+固定 SKU、真实用户调研和选品案例的执行规范分别见
+`docs/fixed_sku_tracking_protocol.md`、`docs/user_research_protocol.md` 和
+`docs/selection_case_protocol.md`。
 
 ## 数据合规
 

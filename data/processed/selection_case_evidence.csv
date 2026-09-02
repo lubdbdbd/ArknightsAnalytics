@@ -1,0 +1,7 @@
+﻿evidence_layer,metric,value,threshold,gate_passed,data_type,interpretation,case_status
+content_heat,cross_platform_heat,71.35,60.0,True,real_public_aggregate,角色公开内容关注度,conditional_pilot
+content_intent,intent_score,82.66666666666667,70.0,True,real_public_aggregate,收藏、转发等深层互动意向,conditional_pilot
+taobao_query_quality,search_precision,0.7,0.6,True,real_public_snapshot,定向搜索样本相关率,conditional_pilot
+taobao_demand_proxy,sales_proxy_lower_bound,249.0,100.0,True,real_public_lower_bound,公开收货人数下界代理，不是精确销量,conditional_pilot
+fixed_sku_timeseries,grade_c_or_above_available,0.0,1.0,False,real_public_longitudinal,至少两期且跨越7天的固定商品复采,conditional_pilot
+user_research,n_30_segment_available,0.0,1.0,False,real_anonymous_survey,至少30名有效受访者的角色品类分层,conditional_pilot

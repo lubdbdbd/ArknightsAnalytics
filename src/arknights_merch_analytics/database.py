@@ -21,6 +21,12 @@ def export_sqlite(
     taobao_market_signals: pd.DataFrame | None = None,
     content_commerce: pd.DataFrame | None = None,
     targeted_query_summary: pd.DataFrame | None = None,
+    tracking_registry: pd.DataFrame | None = None,
+    timeseries_metrics: pd.DataFrame | None = None,
+    survey_audit: pd.DataFrame | None = None,
+    survey_summary: pd.DataFrame | None = None,
+    selection_case_evidence: pd.DataFrame | None = None,
+    selection_case_categories: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(output_path) as connection:
@@ -40,6 +46,18 @@ def export_sqlite(
             content_commerce.to_sql("content_commerce_matrix", connection, if_exists="replace", index=False)
         if targeted_query_summary is not None and not targeted_query_summary.empty:
             targeted_query_summary.to_sql("taobao_target_query_qa", connection, if_exists="replace", index=False)
+        if tracking_registry is not None and not tracking_registry.empty:
+            tracking_registry.to_sql("sku_tracking_registry", connection, if_exists="replace", index=False)
+        if timeseries_metrics is not None and not timeseries_metrics.empty:
+            timeseries_metrics.to_sql("sku_timeseries_metrics", connection, if_exists="replace", index=False)
+        if survey_audit is not None:
+            survey_audit.to_sql("survey_response_audit", connection, if_exists="replace", index=False)
+        if survey_summary is not None:
+            survey_summary.to_sql("survey_operator_category_summary", connection, if_exists="replace", index=False)
+        if selection_case_evidence is not None and not selection_case_evidence.empty:
+            selection_case_evidence.to_sql("selection_case_evidence", connection, if_exists="replace", index=False)
+        if selection_case_categories is not None and not selection_case_categories.empty:
+            selection_case_categories.to_sql("selection_case_categories", connection, if_exists="replace", index=False)
         connection.executescript(
             """
             CREATE INDEX IF NOT EXISTS idx_public_videos_bvid ON public_videos(bvid);
@@ -66,6 +84,14 @@ def export_sqlite(
                     ON content_commerce_matrix(commercial_validation_priority DESC);
                 """
             )
+            if tracking_registry is not None and not tracking_registry.empty:
+                connection.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_tracking_due ON sku_tracking_registry(tracking_status, next_capture_due)"
+                )
+            if timeseries_metrics is not None and not timeseries_metrics.empty:
+                connection.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_timeseries_grade ON sku_timeseries_metrics(timeseries_evidence_grade, operator)"
+                )
             views_path = ROOT / "sql" / "business_views.sql"
             if views_path.exists():
                 connection.executescript(views_path.read_text(encoding="utf-8"))

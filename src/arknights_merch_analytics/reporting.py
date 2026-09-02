@@ -244,6 +244,12 @@ def write_workbook(
     taobao_market_signals: pd.DataFrame | None = None,
     content_commerce: pd.DataFrame | None = None,
     targeted_query_summary: pd.DataFrame | None = None,
+    tracking_registry: pd.DataFrame | None = None,
+    timeseries_metrics: pd.DataFrame | None = None,
+    survey_audit: pd.DataFrame | None = None,
+    survey_summary: pd.DataFrame | None = None,
+    selection_case_evidence: pd.DataFrame | None = None,
+    selection_case_categories: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
@@ -260,6 +266,18 @@ def write_workbook(
             content_commerce.to_excel(writer, sheet_name="Content Commerce Matrix", index=False)
         if targeted_query_summary is not None and not targeted_query_summary.empty:
             targeted_query_summary.to_excel(writer, sheet_name="Target Query QA", index=False)
+        if tracking_registry is not None and not tracking_registry.empty:
+            tracking_registry.to_excel(writer, sheet_name="SKU Tracking Registry", index=False)
+        if timeseries_metrics is not None and not timeseries_metrics.empty:
+            timeseries_metrics.to_excel(writer, sheet_name="SKU Timeseries", index=False)
+        if survey_audit is not None:
+            survey_audit.to_excel(writer, sheet_name="Survey Audit", index=False)
+        if survey_summary is not None:
+            survey_summary.to_excel(writer, sheet_name="Survey Summary", index=False)
+        if selection_case_evidence is not None and not selection_case_evidence.empty:
+            selection_case_evidence.to_excel(writer, sheet_name="Case Evidence", index=False)
+        if selection_case_categories is not None and not selection_case_categories.empty:
+            selection_case_categories.to_excel(writer, sheet_name="Case Categories", index=False)
         erp.to_excel(writer, sheet_name="ERP Mock", index=False)
         sku.to_excel(writer, sheet_name="SKU Recommendations", index=False)
         notes = pd.DataFrame(

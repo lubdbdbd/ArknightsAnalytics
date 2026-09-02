@@ -19,6 +19,10 @@ from arknights_merch_analytics.commerce import (
     build_targeted_query_summary,
     load_taobao_snapshots,
 )
+from arknights_merch_analytics.case_study import (
+    build_selection_case,
+    write_selection_case_report,
+)
 from arknights_merch_analytics.database import export_sqlite
 from arknights_merch_analytics.sql_reporting import build_sql_analysis_outputs
 from arknights_merch_analytics.reporting import (
@@ -29,12 +33,23 @@ from arknights_merch_analytics.reporting import (
     write_workbook,
 )
 from arknights_merch_analytics.simulation import simulate_erp
+from arknights_merch_analytics.survey import (
+    build_survey_summary,
+    validate_survey_responses,
+    write_survey_report,
+)
+from arknights_merch_analytics.tracking import (
+    build_sku_timeseries_metrics,
+    build_tracking_registry,
+    write_tracking_report,
+)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--use-fixture", action="store_true", help="Run with bundled pipeline fixture")
     parser.add_argument("--as-of", default=None, help="ISO timestamp used for reproducible age calculations")
+    parser.add_argument("--case-operator", default="新约能天使", help="Operator used for the verifiable selection case")
     return parser.parse_args()
 
 
@@ -70,12 +85,37 @@ def main() -> None:
     taobao_market_signals = pd.DataFrame()
     targeted_query_summary = pd.DataFrame()
     content_commerce = pd.DataFrame()
+    tracking_registry = pd.DataFrame()
+    timeseries_metrics = pd.DataFrame()
     if taobao_paths:
         roster = operator_heat["operator"].tolist()
         taobao_listings = load_taobao_snapshots(taobao_paths, roster)
         taobao_market_signals = build_taobao_market_signals(taobao_listings, roster)
         targeted_query_summary = build_targeted_query_summary(taobao_listings)
         content_commerce = build_content_commerce_matrix(operator_heat, taobao_market_signals)
+        tracking_registry = build_tracking_registry(taobao_listings)
+        timeseries_metrics = build_sku_timeseries_metrics(taobao_listings)
+
+    survey_path = ROOT / "data" / "manual" / "user_survey_responses.csv"
+    raw_survey = pd.read_csv(survey_path) if survey_path.exists() else pd.DataFrame()
+    if raw_survey.empty and not survey_path.exists():
+        survey_valid = pd.DataFrame()
+        survey_audit = pd.DataFrame(columns=["response_id", "valid", "exclusion_reason"])
+    else:
+        survey_valid, survey_audit = validate_survey_responses(raw_survey)
+    survey_summary = build_survey_summary(survey_valid)
+    selection_case_evidence = pd.DataFrame()
+    selection_case_categories = pd.DataFrame()
+    if not content_commerce.empty and args.case_operator in set(content_commerce["operator"]):
+        selection_case_evidence, selection_case_categories = build_selection_case(
+            args.case_operator,
+            content_commerce,
+            targeted_query_summary,
+            taobao_listings,
+            sku,
+            survey_summary,
+            timeseries_metrics,
+        )
 
     processed = ROOT / "data" / "processed"
     processed.mkdir(parents=True, exist_ok=True)
@@ -91,6 +131,13 @@ def main() -> None:
         taobao_market_signals.to_csv(processed / "taobao_role_signals.csv", index=False, encoding="utf-8-sig")
         targeted_query_summary.to_csv(processed / "taobao_target_query_qa.csv", index=False, encoding="utf-8-sig")
         content_commerce.to_csv(processed / "content_commerce_matrix.csv", index=False, encoding="utf-8-sig")
+        tracking_registry.to_csv(processed / "sku_tracking_registry.csv", index=False, encoding="utf-8-sig")
+        timeseries_metrics.to_csv(processed / "sku_timeseries_metrics.csv", index=False, encoding="utf-8-sig")
+    survey_audit.to_csv(processed / "survey_response_audit.csv", index=False, encoding="utf-8-sig")
+    survey_summary.to_csv(processed / "survey_operator_category_summary.csv", index=False, encoding="utf-8-sig")
+    if not selection_case_evidence.empty:
+        selection_case_evidence.to_csv(processed / "selection_case_evidence.csv", index=False, encoding="utf-8-sig")
+        selection_case_categories.to_csv(processed / "selection_case_categories.csv", index=False, encoding="utf-8-sig")
     save_figures(operator_heat, sku, ROOT / "reports" / "figures", xhs)
     if not taobao_listings.empty:
         save_commerce_figures(
@@ -108,6 +155,25 @@ def main() -> None:
             targeted_query_summary,
             ROOT / "reports" / "generated" / "taobao_commerce_report.md",
         )
+        write_tracking_report(
+            tracking_registry,
+            timeseries_metrics,
+            ROOT / "reports" / "generated" / "sku_timeseries_report.md",
+        )
+    write_survey_report(
+        survey_valid,
+        survey_audit,
+        survey_summary,
+        ROOT / "reports" / "generated" / "user_research_report.md",
+    )
+    if not selection_case_evidence.empty:
+        write_selection_case_report(
+            args.case_operator,
+            selection_case_evidence,
+            selection_case_categories,
+            sku,
+            ROOT / "reports" / "generated" / "selection_case_study.md",
+        )
     write_workbook(
         operator_heat,
         erp,
@@ -119,6 +185,12 @@ def main() -> None:
         taobao_market_signals,
         content_commerce,
         targeted_query_summary,
+        tracking_registry,
+        timeseries_metrics,
+        survey_audit,
+        survey_summary,
+        selection_case_evidence,
+        selection_case_categories,
     )
     export_sqlite(
         videos,
@@ -132,6 +204,12 @@ def main() -> None:
         taobao_market_signals,
         content_commerce,
         targeted_query_summary,
+        tracking_registry,
+        timeseries_metrics,
+        survey_audit,
+        survey_summary,
+        selection_case_evidence,
+        selection_case_categories,
     )
     build_sql_analysis_outputs(
         ROOT / "reports" / "generated" / "operations.db",

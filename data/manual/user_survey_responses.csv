@@ -1,2 +1,1 @@
 response_id,respondent_id,submitted_at,consent,response_source,completion_seconds,attention_check,player_tenure_months,monthly_merch_budget,has_purchased_merch,operator,category,purchase_intent,acceptable_price,channel,limited_preference
-EXAMPLE-001,ANON-001,2026-09-02T12:00:00+08:00,1,pilot,120,通过,48,200,1,新约能天使,亚克力立牌,5,49,淘宝,4
