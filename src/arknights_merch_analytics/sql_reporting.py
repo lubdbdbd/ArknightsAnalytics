@@ -117,6 +117,22 @@ SQL_REPORT_QUERIES = {
           AND ip_scope = 'arknights'
           AND category = '亚克力立牌'
     """,
+    "bilibili_content_types": """
+        SELECT *
+        FROM bilibili_content_type_summary
+        ORDER BY content_count DESC
+    """,
+    "bilibili_yearly_trend": """
+        SELECT *
+        FROM bilibili_yearly_summary
+        ORDER BY publication_year
+    """,
+    "bilibili_operator_campaigns": """
+        SELECT *
+        FROM vw_bilibili_campaign_performance
+        ORDER BY campaign_rank
+        LIMIT 20
+    """,
 }
 
 
@@ -144,7 +160,11 @@ def build_sql_analysis_outputs(
                 (SELECT COUNT(*) FROM vw_taobao_listing_quality
                     WHERE trackable_for_timeseries = 1) AS trackable_listing_count,
                 (SELECT COUNT(*) FROM vw_sku_portfolio_rank
-                    WHERE portfolio_role = '直播核心款') AS live_core_sku_count
+                    WHERE portfolio_role = '直播核心款') AS live_core_sku_count,
+                (SELECT COUNT(*) FROM bilibili_official_archive) AS bilibili_archive_count,
+                (SELECT COUNT(*) FROM bilibili_operator_campaign_summary) AS bilibili_campaign_role_count,
+                (SELECT SUM(campaign_content_count) FROM vw_bilibili_campaign_performance)
+                    AS bilibili_campaign_association_count
             """,
             connection,
         )
@@ -152,6 +172,11 @@ def build_sql_analysis_outputs(
     for name, frame in results.items():
         frame.to_csv(output_dir / f"sql_{name}.csv", index=False, encoding="utf-8-sig")
     kpi = kpis.iloc[0]
+    campaign_association_count = (
+        int(kpi["bilibili_campaign_association_count"])
+        if pd.notna(kpi["bilibili_campaign_association_count"])
+        else 0
+    )
     sections = [
         "# SQL 运营分析成果报告",
         "",
@@ -163,6 +188,8 @@ def build_sql_analysis_outputs(
         f"- 核心商业角色：{int(kpi['core_commercial_roles'])} 名。",
         f"- 可进入固定商品 ID 时间序列：{int(kpi['trackable_listing_count'])} 条。",
         f"- SQL 识别直播核心款：{int(kpi['live_core_sku_count'])} 个。",
+        f"- B站官号历史内容：{int(kpi['bilibili_archive_count'])} 条。",
+        f"- B站角色 Campaign：{int(kpi['bilibili_campaign_role_count'])} 名角色、{campaign_association_count} 条关联。",
         "",
         "## SQL 技术应用",
         "",
@@ -183,6 +210,9 @@ def build_sql_analysis_outputs(
         "price_band_structure": "价格带结构",
         "inventory_risk_queue": "库存风险队列",
         "index_plan_audit": "索引执行计划审计",
+        "bilibili_content_types": "B站官号内容类型结构",
+        "bilibili_yearly_trend": "B站官号年度内容供给",
+        "bilibili_operator_campaigns": "角色上线 Campaign 曝光",
     }
     for name, frame in results.items():
         sections.extend([f"## {titles[name]}", "", frame.to_markdown(index=False), ""])

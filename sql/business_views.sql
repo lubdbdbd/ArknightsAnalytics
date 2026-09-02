@@ -3,6 +3,7 @@ DROP VIEW IF EXISTS vw_sku_portfolio_rank;
 DROP VIEW IF EXISTS vw_category_operations;
 DROP VIEW IF EXISTS vw_taobao_listing_quality;
 DROP VIEW IF EXISTS vw_taobao_category_market;
+DROP VIEW IF EXISTS vw_bilibili_campaign_performance;
 
 CREATE VIEW vw_role_commercial_dashboard AS
 SELECT
@@ -159,3 +160,20 @@ FROM taobao_public_snapshots
 WHERE query_scope = 'market_baseline'
   AND ip_scope = 'arknights'
 GROUP BY category;
+
+CREATE VIEW vw_bilibili_campaign_performance AS
+SELECT
+    operator,
+    bilibili_campaign_content_count AS campaign_content_count,
+    bilibili_direct_content_count AS direct_content_count,
+    bilibili_window_content_count AS window_content_count,
+    bilibili_campaign_content_types AS content_type_count,
+    ROUND(bilibili_weighted_campaign_views, 2) AS weighted_campaign_views,
+    ROUND(bilibili_weighted_intent_actions, 2) AS weighted_intent_actions,
+    ROUND(bilibili_campaign_exposure_score, 2) AS campaign_exposure_score,
+    ROUND(bilibili_campaign_depth_score, 2) AS campaign_depth_score,
+    ROW_NUMBER() OVER (
+        ORDER BY bilibili_campaign_exposure_score DESC,
+                 bilibili_campaign_content_count DESC
+    ) AS campaign_rank
+FROM bilibili_operator_campaign_summary;

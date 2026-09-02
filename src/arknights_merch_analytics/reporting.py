@@ -250,6 +250,11 @@ def write_workbook(
     survey_summary: pd.DataFrame | None = None,
     selection_case_evidence: pd.DataFrame | None = None,
     selection_case_categories: pd.DataFrame | None = None,
+    bilibili_archive: pd.DataFrame | None = None,
+    bilibili_campaign_content: pd.DataFrame | None = None,
+    bilibili_campaign_summary: pd.DataFrame | None = None,
+    bilibili_content_types: pd.DataFrame | None = None,
+    bilibili_yearly_summary: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
@@ -278,6 +283,16 @@ def write_workbook(
             selection_case_evidence.to_excel(writer, sheet_name="Case Evidence", index=False)
         if selection_case_categories is not None and not selection_case_categories.empty:
             selection_case_categories.to_excel(writer, sheet_name="Case Categories", index=False)
+        if bilibili_archive is not None and not bilibili_archive.empty:
+            bilibili_archive.to_excel(writer, sheet_name="Bilibili Archive", index=False)
+        if bilibili_campaign_content is not None and not bilibili_campaign_content.empty:
+            bilibili_campaign_content.to_excel(writer, sheet_name="Bilibili Campaign", index=False)
+        if bilibili_campaign_summary is not None and not bilibili_campaign_summary.empty:
+            bilibili_campaign_summary.to_excel(writer, sheet_name="Bilibili Role Summary", index=False)
+        if bilibili_content_types is not None and not bilibili_content_types.empty:
+            bilibili_content_types.to_excel(writer, sheet_name="Bilibili Type Summary", index=False)
+        if bilibili_yearly_summary is not None and not bilibili_yearly_summary.empty:
+            bilibili_yearly_summary.to_excel(writer, sheet_name="Bilibili Yearly", index=False)
         erp.to_excel(writer, sheet_name="ERP Mock", index=False)
         sku.to_excel(writer, sheet_name="SKU Recommendations", index=False)
         notes = pd.DataFrame(

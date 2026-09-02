@@ -61,6 +61,30 @@
 - `merch_opportunity_score`：接入真实电商数据前的内容侧选品候选分。
 - `commerce_validation_status`：后续淘宝数据补充优先级。
 
+## bilibili_official_archive.csv
+
+- `content_type`：`operator_pv`、`music_ep`、`event_pv`、`gameplay_system`、`offline_event`、`animation_brand`、`other_pv` 或 `other_official`。
+- `explicit_operator`：仅在标题包含明确干员结构时写入，不使用普通单字包含匹配。
+- `views_per_day`：截至统一分析日期的播放速度。
+- `weighted_engagement_rate`：点赞、投币、收藏、分享、评论和弹幕的加权互动率。
+- `intent_rate`：收藏、投币和分享形成的深层互动代理。
+- `archive_content_score`：全官号样本内的触达、速度和互动复合分。
+
+## bilibili_operator_campaign_content.csv
+
+- `association_type=direct_operator`：标题明确指向角色。
+- `association_type=campaign_window`：位于最近角色PV前后14天的共享上线宣传内容。
+- `association_weight`：按距离锚点天数衰减，直接角色内容固定为1。
+- `days_from_anchor`：内容相对角色PV锚点的发布时间差。
+
+## bilibili_operator_campaign_summary.csv
+
+- `bilibili_campaign_content_count`：角色上线Campaign内的去重内容量。
+- `bilibili_direct_content_count` / `window_content_count`：直接与共享内容分层计数。
+- `bilibili_weighted_campaign_views`：按归因权重折算的Campaign公开播放量。
+- `bilibili_campaign_exposure_score`：加权播放量的样本内百分位。
+- `bilibili_campaign_depth_score`：内容数量与类型宽度形成的传播深度分。
+
 ## platform_ecosystem.csv
 
 - `scope=brand_ecosystem`：平台整体品牌/话题生态，不代表官方账号单篇数据。
@@ -144,6 +168,7 @@
 - `vw_category_operations`：按品类聚合的加权转化率、售罄率、退货率、模拟毛利及库存风险。
 - `vw_taobao_listing_quality`：淘宝商品的跨 IP、相关性、销量可用性、截断状态与时间序列准入标签。
 - `vw_taobao_category_market`：淘宝品类价格、销量代理、正版/同人、预售与履约服务结构。
+- `vw_bilibili_campaign_performance`：角色Campaign内容量、加权曝光、内容深度及排名。
 
 ## SQL 自动导出结果
 
@@ -155,3 +180,6 @@
 - `sql_price_band_structure.csv`：入门、主力、中高客单和高客单价格带。
 - `sql_inventory_risk_queue.csv`：每个品类的库存风险优先处理队列。
 - `sql_index_plan_audit.csv`：使用 `EXPLAIN QUERY PLAN` 验证复合索引命中的执行计划。
+- `sql_bilibili_content_types.csv`：8类B站官号内容的数量、触达和互动表现。
+- `sql_bilibili_yearly_trend.csv`：2019—2026年内容供给及类型变化。
+- `sql_bilibili_operator_campaigns.csv`：角色上线Campaign曝光和内容深度排名。

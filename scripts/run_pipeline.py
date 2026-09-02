@@ -23,6 +23,14 @@ from arknights_merch_analytics.case_study import (
     build_selection_case,
     write_selection_case_report,
 )
+from arknights_merch_analytics.bilibili_archive import (
+    build_bilibili_archive,
+    build_bilibili_archive_summaries,
+    build_bilibili_campaign_attribution,
+    build_bilibili_campaign_summary,
+    save_bilibili_archive_figures,
+    write_bilibili_archive_report,
+)
 from arknights_merch_analytics.database import export_sqlite
 from arknights_merch_analytics.sql_reporting import build_sql_analysis_outputs
 from arknights_merch_analytics.reporting import (
@@ -59,18 +67,32 @@ def main() -> None:
         ROOT / "data" / "fixtures" / "bilibili_videos.json"
         if args.use_fixture
         else (
-            ROOT / "data" / "public" / "bilibili_official_operator_posts.json"
-            if (ROOT / "data" / "public" / "bilibili_official_operator_posts.json").exists()
-            else ROOT / "data" / "public" / "bilibili_official_pv_snapshot.json"
+            ROOT / "data" / "public" / "bilibili_official_archive.json"
+            if (ROOT / "data" / "public" / "bilibili_official_archive.json").exists()
+            else (
+                ROOT / "data" / "public" / "bilibili_official_operator_posts.json"
+                if (ROOT / "data" / "public" / "bilibili_official_operator_posts.json").exists()
+                else ROOT / "data" / "public" / "bilibili_official_pv_snapshot.json"
+            )
         )
     )
     if not input_path.exists():
         raise SystemExit(f"Missing {input_path}. Run scripts/collect_bilibili.py or use --use-fixture.")
     videos = pd.DataFrame(json.loads(input_path.read_text(encoding="utf-8")))
     as_of = datetime.fromisoformat(args.as_of) if args.as_of else None
+    bilibili_archive = build_bilibili_archive(videos, as_of=as_of)
+    bilibili_campaign_content = build_bilibili_campaign_attribution(bilibili_archive)
+    bilibili_campaign_summary = build_bilibili_campaign_summary(bilibili_campaign_content)
+    bilibili_content_types, bilibili_yearly_summary = build_bilibili_archive_summaries(
+        bilibili_archive
+    )
     weibo_path = ROOT / "data" / "public" / "weibo_official_recent_posts.json"
     weibo = pd.DataFrame(json.loads(weibo_path.read_text(encoding="utf-8"))) if weibo_path.exists() else pd.DataFrame()
     operator_heat, content_scores = build_character_heat_matrix(videos, weibo, as_of=as_of)
+    if not bilibili_campaign_summary.empty:
+        operator_heat = operator_heat.merge(
+            bilibili_campaign_summary, on="operator", how="left"
+        )
     xhs_path = ROOT / "data" / "public" / "xiaohongshu_brand_snapshots.json"
     xhs = pd.DataFrame(json.loads(xhs_path.read_text(encoding="utf-8"))) if xhs_path.exists() else pd.DataFrame()
     if not xhs.empty:
@@ -122,6 +144,11 @@ def main() -> None:
     operator_heat.to_csv(processed / "operator_heat.csv", index=False, encoding="utf-8-sig")
     operator_heat.to_csv(processed / "character_heat_matrix.csv", index=False, encoding="utf-8-sig")
     content_scores.to_csv(processed / "official_content_scores.csv", index=False, encoding="utf-8-sig")
+    bilibili_archive.to_csv(processed / "bilibili_official_archive.csv", index=False, encoding="utf-8-sig")
+    bilibili_campaign_content.to_csv(processed / "bilibili_operator_campaign_content.csv", index=False, encoding="utf-8-sig")
+    bilibili_campaign_summary.to_csv(processed / "bilibili_operator_campaign_summary.csv", index=False, encoding="utf-8-sig")
+    bilibili_content_types.to_csv(processed / "bilibili_content_type_summary.csv", index=False, encoding="utf-8-sig")
+    bilibili_yearly_summary.to_csv(processed / "bilibili_yearly_summary.csv", index=False, encoding="utf-8-sig")
     if not xhs.empty:
         xhs.to_csv(processed / "platform_ecosystem.csv", index=False, encoding="utf-8-sig")
     erp.to_csv(processed / "erp_mock.csv", index=False, encoding="utf-8-sig")
@@ -139,6 +166,12 @@ def main() -> None:
         selection_case_evidence.to_csv(processed / "selection_case_evidence.csv", index=False, encoding="utf-8-sig")
         selection_case_categories.to_csv(processed / "selection_case_categories.csv", index=False, encoding="utf-8-sig")
     save_figures(operator_heat, sku, ROOT / "reports" / "figures", xhs)
+    save_bilibili_archive_figures(
+        bilibili_content_types,
+        bilibili_yearly_summary,
+        bilibili_campaign_summary,
+        ROOT / "reports" / "figures",
+    )
     if not taobao_listings.empty:
         save_commerce_figures(
             taobao_listings,
@@ -147,6 +180,14 @@ def main() -> None:
             ROOT / "reports" / "figures",
         )
     write_report(operator_heat, sku, ROOT / "reports" / "generated" / "analysis_report.md", xhs)
+    write_bilibili_archive_report(
+        bilibili_archive,
+        bilibili_content_types,
+        bilibili_yearly_summary,
+        bilibili_campaign_content,
+        bilibili_campaign_summary,
+        ROOT / "reports" / "generated" / "bilibili_archive_report.md",
+    )
     if not taobao_listings.empty:
         write_commerce_report(
             taobao_listings,
@@ -191,6 +232,11 @@ def main() -> None:
         survey_summary,
         selection_case_evidence,
         selection_case_categories,
+        bilibili_archive,
+        bilibili_campaign_content,
+        bilibili_campaign_summary,
+        bilibili_content_types,
+        bilibili_yearly_summary,
     )
     export_sqlite(
         videos,
@@ -210,6 +256,11 @@ def main() -> None:
         survey_summary,
         selection_case_evidence,
         selection_case_categories,
+        bilibili_archive,
+        bilibili_campaign_content,
+        bilibili_campaign_summary,
+        bilibili_content_types,
+        bilibili_yearly_summary,
     )
     build_sql_analysis_outputs(
         ROOT / "reports" / "generated" / "operations.db",

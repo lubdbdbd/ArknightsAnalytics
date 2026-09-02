@@ -27,6 +27,11 @@ def export_sqlite(
     survey_summary: pd.DataFrame | None = None,
     selection_case_evidence: pd.DataFrame | None = None,
     selection_case_categories: pd.DataFrame | None = None,
+    bilibili_archive: pd.DataFrame | None = None,
+    bilibili_campaign_content: pd.DataFrame | None = None,
+    bilibili_campaign_summary: pd.DataFrame | None = None,
+    bilibili_content_types: pd.DataFrame | None = None,
+    bilibili_yearly_summary: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(output_path) as connection:
@@ -58,6 +63,63 @@ def export_sqlite(
             selection_case_evidence.to_sql("selection_case_evidence", connection, if_exists="replace", index=False)
         if selection_case_categories is not None and not selection_case_categories.empty:
             selection_case_categories.to_sql("selection_case_categories", connection, if_exists="replace", index=False)
+        if bilibili_archive is not None and not bilibili_archive.empty:
+            bilibili_archive.to_sql("bilibili_official_archive", connection, if_exists="replace", index=False)
+        else:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS bilibili_official_archive (
+                    bvid TEXT, publication_year INTEGER, content_type TEXT,
+                    view REAL, weighted_engagement_rate REAL, intent_rate REAL,
+                    views_per_day REAL
+                )
+                """
+            )
+        if bilibili_campaign_content is not None and not bilibili_campaign_content.empty:
+            bilibili_campaign_content.to_sql("bilibili_operator_campaign_content", connection, if_exists="replace", index=False)
+        if bilibili_campaign_summary is not None and not bilibili_campaign_summary.empty:
+            bilibili_campaign_summary.to_sql("bilibili_operator_campaign_summary", connection, if_exists="replace", index=False)
+        else:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS bilibili_operator_campaign_summary (
+                    operator TEXT,
+                    bilibili_campaign_content_count INTEGER,
+                    bilibili_direct_content_count INTEGER,
+                    bilibili_window_content_count INTEGER,
+                    bilibili_campaign_content_types INTEGER,
+                    bilibili_weighted_campaign_views REAL,
+                    bilibili_weighted_intent_actions REAL,
+                    bilibili_campaign_exposure_score REAL,
+                    bilibili_campaign_depth_score REAL
+                )
+                """
+            )
+        if bilibili_content_types is not None and not bilibili_content_types.empty:
+            bilibili_content_types.to_sql("bilibili_content_type_summary", connection, if_exists="replace", index=False)
+        else:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS bilibili_content_type_summary (
+                    content_type TEXT, content_count INTEGER, total_views REAL,
+                    median_views REAL, average_engagement_rate REAL,
+                    average_intent_rate REAL, average_momentum REAL
+                )
+                """
+            )
+        if bilibili_yearly_summary is not None and not bilibili_yearly_summary.empty:
+            bilibili_yearly_summary.to_sql("bilibili_yearly_summary", connection, if_exists="replace", index=False)
+        else:
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS bilibili_yearly_summary (
+                    publication_year INTEGER, content_count INTEGER,
+                    operator_pv_count INTEGER, music_ep_count INTEGER,
+                    event_pv_count INTEGER, total_views REAL,
+                    median_views REAL, average_engagement_rate REAL
+                )
+                """
+            )
         connection.executescript(
             """
             CREATE INDEX IF NOT EXISTS idx_public_videos_bvid ON public_videos(bvid);
@@ -91,6 +153,14 @@ def export_sqlite(
             if timeseries_metrics is not None and not timeseries_metrics.empty:
                 connection.execute(
                     "CREATE INDEX IF NOT EXISTS idx_timeseries_grade ON sku_timeseries_metrics(timeseries_evidence_grade, operator)"
+                )
+            if bilibili_archive is not None and not bilibili_archive.empty:
+                connection.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_bilibili_archive_year_type ON bilibili_official_archive(publication_year, content_type)"
+                )
+            if bilibili_campaign_content is not None and not bilibili_campaign_content.empty:
+                connection.execute(
+                    "CREATE INDEX IF NOT EXISTS idx_bilibili_campaign_operator_type ON bilibili_operator_campaign_content(operator, association_type, content_type)"
                 )
             views_path = ROOT / "sql" / "business_views.sql"
             if views_path.exists():

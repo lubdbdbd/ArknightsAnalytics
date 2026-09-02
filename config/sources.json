@@ -12,6 +12,14 @@
     "page_size": 50,
     "request_interval_seconds": 1.5,
     "start_date": "2022-01-01",
+    "historical_start_date": "2019-01-01",
+    "historical_search_queries": [
+      "明日方舟 干员 技能展示PV",
+      "明日方舟 限定干员 前瞻PV",
+      "明日方舟 干员 前瞻PV",
+      "明日方舟 新干员"
+    ],
+    "historical_max_pages_per_query": 20,
     "related_max_official_videos": 450,
     "related_max_requests": 260
   },

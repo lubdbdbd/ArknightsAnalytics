@@ -127,7 +127,7 @@ def test_exports_sqlite_and_reports(tmp_path) -> None:
 
     sql_report_path = tmp_path / "sql_report.md"
     sql_outputs = build_sql_analysis_outputs(database_path, tmp_path / "sql_outputs", sql_report_path)
-    assert len(sql_outputs) == 8
+    assert len(sql_outputs) == 11
     assert "SQL 运营分析成果报告" in sql_report_path.read_text(encoding="utf-8")
     assert (tmp_path / "sql_outputs" / "sql_role_decision_board.csv").exists()
     assert "idx_taobao_scope_ip_category" in sql_outputs["index_plan_audit"].iloc[0]["detail"]

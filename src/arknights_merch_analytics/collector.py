@@ -170,6 +170,7 @@ def collect_bilibili_related(
     max_official_videos: int = 450,
     max_requests: int = 260,
     request_interval_seconds: float = 0.12,
+    operator_only: bool = True,
 ) -> list[dict[str, Any]]:
     seeds = json.loads(seed_path.read_text(encoding="utf-8"))
     videos = {item["bvid"]: item for item in seeds if item.get("bvid")}
@@ -211,6 +212,7 @@ def collect_bilibili_related(
             videos[related_bvid] = {
                 "bvid": related_bvid,
                 "title": clean_title(item.get("title", "")),
+                "description": str(item.get("desc") or "").strip(),
                 "owner_mid": owner.get("mid"),
                 "owner_name": owner.get("name"),
                 "published_at": datetime.fromtimestamp(
@@ -233,17 +235,19 @@ def collect_bilibili_related(
                 queued.add(related_bvid)
         time.sleep(request_interval_seconds)
 
-    operator_videos = [
-        item
-        for item in videos.values()
-        if re.search(r"(?:限定)?干员[「『“\"]([^」』”\"]+)[」』”\"]", item["title"])
-    ]
-    operator_videos.sort(key=lambda item: item["published_at"], reverse=True)
+    collected = list(videos.values())
+    if operator_only:
+        collected = [
+            item
+            for item in collected
+            if re.search(r"(?:限定)?干员[「『“\"]([^」』”\"]+)[」』”\"]", item["title"])
+        ]
+    collected.sort(key=lambda item: item.get("published_at", ""), reverse=True)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
-        json.dumps(operator_videos, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(collected, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    return operator_videos
+    return collected
 
 
 def collect_weibo_sina_mirror(uid: str, output_path: Path) -> list[dict[str, Any]]:

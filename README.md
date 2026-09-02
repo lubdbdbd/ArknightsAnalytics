@@ -11,7 +11,7 @@
 - **模拟数据**：订单、库存、销售和退货数据仅用于展示分析方法，字段中始终保留 `is_simulated=true`。
 - 互动量是角色关注度的代理变量，不等同于真实销量或购买意愿。
 
-仓库内置 30 条 B站官号角色内容、100 条微博近期官号公开内容、4 期小红书品牌生态快照和首批 84 条淘宝公开商品快照。角色级总榜覆盖 30 名干员；微博仅对近期明确命中的角色形成交叉验证，小红书角色级字段保留为缺失，淘宝首批横截面只作为商业验证样本，禁止把公开收货人数下界写成精确销量。
+仓库内置 550 条 B站官号历史内容、100 条微博近期官号公开内容、4 期小红书品牌生态快照和首批 84 条淘宝公开商品快照。B站内容覆盖 2019—2026 年并拆分为 8 类，使用 31 条显式干员 PV 作为角色锚点，形成 31 名干员、275 条上线 Campaign 关联；共享活动流量与角色直接内容分层保存。微博仅对近期明确命中的角色形成交叉验证，小红书角色级字段保留为缺失，淘宝首批横截面只作为商业验证样本，禁止把公开收货人数下界写成精确销量。
 
 ## 分析链路
 
@@ -45,6 +45,12 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\run_pipeline.py
 ```
 
+首次建立或增量扩展 B站官号历史库时，可使用低频 related 图采集器；出现 412/429 时程序停止且不覆盖旧数据：
+
+```powershell
+.\.venv\Scripts\python.exe scripts\collect_bilibili_archive.py --max-videos 800 --max-requests 500 --interval 0.7
+```
+
 后续复采同一批淘宝 SKU 时，可填写模板并导入新的日期快照：
 
 ```powershell
@@ -75,6 +81,11 @@ py -3.12 -m venv .venv
 ## 主要输出
 
 - `data/processed/character_heat_matrix.csv`：角色跨平台热度及多维特征
+- `data/processed/bilibili_official_archive.csv`：2019—2026 年B站官号历史内容、分类及互动指标
+- `data/processed/bilibili_operator_campaign_content.csv`：角色直接内容与前后14天Campaign窗口归因
+- `data/processed/bilibili_operator_campaign_summary.csv`：31名角色的Campaign内容深度与加权曝光
+- `data/processed/bilibili_content_type_summary.csv`：8类官号内容的供给和表现结构
+- `data/processed/bilibili_yearly_summary.csv`：年度内容数量、类型与互动趋势
 - `data/processed/official_content_scores.csv`：官号内容级评分与角色归因
 - `data/processed/platform_ecosystem.csv`：小红书品牌生态快照
 - `data/processed/taobao_public_snapshots.csv`：淘宝公开商品字段及质量标签
@@ -90,6 +101,7 @@ py -3.12 -m venv .venv
 - `data/processed/erp_mock.csv`：明确标注的模拟 ERP 明细
 - `data/processed/sku_recommendations.csv`：SKU 选品评分
 - `reports/generated/analysis_report.md`：自动生成的分析报告
+- `reports/generated/bilibili_archive_report.md`：B站官号历史内容和角色Campaign分析
 - `reports/generated/taobao_commerce_report.md`：淘宝商业化运营分析报告
 - `reports/generated/sku_timeseries_report.md`：固定 SKU 周期复采状态与证据等级
 - `reports/generated/user_research_report.md`：真实匿名用户调研质量与结果
@@ -99,8 +111,8 @@ py -3.12 -m venv .venv
 - `reports/generated/operations.db`：可直接执行分析 SQL 的 SQLite 数据库
 - `reports/figures/`：核心可视化
 
-SQL 资产包括 `sql/business_views.sql` 中的 5 个可复用业务视图，以及
-`sql/analysis_queries.sql` 中覆盖角色决策、价格带、品类漏斗、市场集中度、库存风险和数据质量审计的 20 组查询；字段定义见 `docs/data_dictionary.md`。
+SQL 资产包括 `sql/business_views.sql` 中的 6 个可复用业务视图，以及
+`sql/analysis_queries.sql` 中覆盖角色决策、内容供给、Campaign曝光、价格带、品类漏斗、市场集中度、库存风险和数据质量审计的 25 组查询；字段定义见 `docs/data_dictionary.md`。
 
 面试准备、岗位能力地图、项目拷打题和专业化迭代路线见
 `docs/commercial_operations_interview_guide.md`。

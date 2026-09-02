@@ -10,8 +10,8 @@
 
 | evidence_layer       | metric                     |   value |   threshold | gate_passed   | data_type                | interpretation    | case_status       |
 |:---------------------|:---------------------------|--------:|------------:|:--------------|:-------------------------|:------------------|:------------------|
-| content_heat         | cross_platform_heat        |   71.35 |       60.00 | True          | real_public_aggregate    | 角色公开内容关注度         | conditional_pilot |
-| content_intent       | intent_score               |   82.67 |       70.00 | True          | real_public_aggregate    | 收藏、转发等深层互动意向      | conditional_pilot |
+| content_heat         | cross_platform_heat        |   71.00 |       60.00 | True          | real_public_aggregate    | 角色公开内容关注度         | conditional_pilot |
+| content_intent       | intent_score               |   82.74 |       70.00 | True          | real_public_aggregate    | 收藏、转发等深层互动意向      | conditional_pilot |
 | taobao_query_quality | search_precision           |    0.70 |        0.60 | True          | real_public_snapshot     | 定向搜索样本相关率         | conditional_pilot |
 | taobao_demand_proxy  | sales_proxy_lower_bound    |  249.00 |      100.00 | True          | real_public_lower_bound  | 公开收货人数下界代理，不是精确销量 | conditional_pilot |
 | fixed_sku_timeseries | grade_c_or_above_available |    0.00 |        1.00 | False         | real_public_longitudinal | 至少两期且跨越7天的固定商品复采  | conditional_pilot |
@@ -32,12 +32,12 @@
 
 | category   |   price |   selection_score | recommendation   |   production_risk |   inventory_risk | is_simulated   |
 |:-----------|--------:|------------------:|:-----------------|------------------:|-----------------:|:---------------|
-| 徽章         |   18.00 |             71.84 | 重点推荐             |              0.15 |            26.17 | True           |
-| 色纸         |   30.00 |             71.73 | 重点推荐             |              0.15 |            10.64 | True           |
-| 亚克力立牌      |   48.00 |             64.79 | 常规上架             |              0.25 |            36.72 | True           |
-| 毛绒         |  128.00 |             50.96 | 常规上架             |              0.45 |            58.33 | True           |
-| 服饰         |  229.00 |             32.40 | 谨慎测试             |              0.65 |            78.90 | True           |
-| 手办         |  699.00 |             31.35 | 谨慎测试             |              0.80 |            91.14 | True           |
+| 徽章         |   18.00 |             72.11 | 重点推荐             |              0.15 |            21.12 | True           |
+| 色纸         |   30.00 |             71.27 | 重点推荐             |              0.15 |            13.99 | True           |
+| 亚克力立牌      |   48.00 |             64.70 | 常规上架             |              0.25 |            35.98 | True           |
+| 毛绒         |  128.00 |             50.33 | 常规上架             |              0.45 |            62.30 | True           |
+| 服饰         |  229.00 |             32.62 | 谨慎测试             |              0.65 |            74.95 | True           |
+| 手办         |  699.00 |             30.90 | 谨慎测试             |              0.80 |            95.56 | True           |
 
 ## 可执行选品建议
 

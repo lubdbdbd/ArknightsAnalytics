@@ -295,3 +295,54 @@ FROM vw_role_commercial_dashboard
 WHERE taobao_observed = 1
   AND commercial_heat > content_heat
 ORDER BY commerce_over_content DESC;
+
+-- 21. B站官号内容类型结构：比较供给规模、触达与互动质量
+SELECT
+    content_type,
+    content_count,
+    ROUND(total_views, 0) AS total_views,
+    ROUND(median_views, 0) AS median_views,
+    ROUND(average_engagement_rate * 100, 2) AS avg_weighted_engagement_pct,
+    ROUND(average_intent_rate * 100, 2) AS avg_intent_pct
+FROM bilibili_content_type_summary
+ORDER BY content_count DESC;
+
+-- 22. 年度内容供给趋势：观察内容规模与角色PV、EP、活动PV结构变化
+SELECT
+    publication_year,
+    content_count,
+    operator_pv_count,
+    music_ep_count,
+    event_pv_count,
+    ROUND(total_views, 0) AS total_views,
+    ROUND(median_views, 0) AS median_views
+FROM bilibili_yearly_summary
+ORDER BY publication_year;
+
+-- 23. 角色上线Campaign排名：直接内容与共享宣传内容分开统计
+SELECT *
+FROM vw_bilibili_campaign_performance
+ORDER BY campaign_rank
+LIMIT 20;
+
+-- 24. Campaign内容类型组合：识别角色上线传播依赖的内容形态
+SELECT
+    operator,
+    content_type,
+    COUNT(DISTINCT bvid) AS content_count,
+    ROUND(SUM(view * association_weight), 0) AS weighted_views,
+    ROUND(AVG(weighted_engagement_rate) * 100, 2) AS avg_engagement_pct
+FROM bilibili_operator_campaign_content
+GROUP BY operator, content_type
+ORDER BY weighted_views DESC;
+
+-- 25. 直接角色PV与Campaign窗口内容对比：避免共享活动流量冒充角色表现
+SELECT
+    association_type,
+    COUNT(DISTINCT bvid) AS content_count,
+    COUNT(DISTINCT operator) AS operator_count,
+    ROUND(SUM(view * association_weight), 0) AS weighted_views,
+    ROUND(AVG(intent_rate) * 100, 2) AS avg_intent_pct
+FROM bilibili_operator_campaign_content
+GROUP BY association_type
+ORDER BY association_type;
