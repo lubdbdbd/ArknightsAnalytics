@@ -72,7 +72,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe scripts\run_pipeline.py
 ```
 
-项目已提供可直接部署到问卷平台的28题衍生品用户调研、三阶段样本方案和机器可读配置：
+项目已提供可直接部署到问卷平台的25题衍生品用户调研、三阶段样本方案和机器可读配置：
 
 - `docs/derivative_merch_user_questionnaire.md`
 - `config/survey_questionnaire.json`

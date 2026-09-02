@@ -143,8 +143,8 @@
 
 ## survey_response_audit.csv
 
-- `valid`：是否通过知情同意、完成时间、注意力检查和字段范围门禁。
-- `exclusion_reason`：无同意、过快、注意力失败、重复或非法字段等排除原因。
+- `valid`：是否通过知情同意、完成时间、重复、字段范围和前后逻辑校验。
+- `exclusion_reason`：无同意、过快、重复、非法字段或价格逻辑冲突等排除原因。
 
 ## survey_operator_category_summary.csv
 
@@ -169,7 +169,7 @@
 ## survey_price_summary.csv
 
 - `acceptable_price_p25/p50/p75`：最高可接受价格的四分位分布。
-- `good_value_price_median` / `expensive_price_median`：价格阶梯中的合适价格与偏贵价格中位数。
+- `good_value_price_median` / `expensive_price_median`：合适价格及可选的偏贵价格中位数；新版问卷以前者和最高可接受价格为主。
 - `directional_price_floor/ceiling`：用于小批量概念验证的方向性区间，不等于正式成交定价。
 
 ## selection_case_evidence.csv

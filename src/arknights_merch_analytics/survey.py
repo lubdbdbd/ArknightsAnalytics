@@ -13,7 +13,6 @@ REQUIRED_COLUMNS = {
     "consent",
     "response_source",
     "completion_seconds",
-    "attention_check",
     "player_tenure_months",
     "monthly_merch_budget",
     "has_purchased_merch",
@@ -49,6 +48,7 @@ OPTIONAL_COLUMNS_DEFAULTS = {
     "price_too_expensive": np.nan,
     "concept_appeal": np.nan,
     "concept_uniqueness": np.nan,
+    "product_improvement": "",
     "open_feedback": "",
 }
 
@@ -149,7 +149,6 @@ def validate_survey_responses(
     flag(~frame["consent"], "no_consent")
     flag(frame["submitted_at"].isna(), "invalid_timestamp")
     flag(frame["completion_seconds"].lt(45) | frame["completion_seconds"].isna(), "too_fast")
-    flag(frame["attention_check"].astype(str).ne("通过"), "attention_check_failed")
     flag(~frame["purchase_intent"].between(1, 5), "invalid_purchase_intent")
     flag(~frame["acceptable_price"].between(1, 5000), "invalid_acceptable_price")
     flag(~frame["limited_preference"].between(1, 5), "invalid_limited_preference")
@@ -324,7 +323,7 @@ def write_survey_report(
     lines = [
         "# 用户购买意愿调研报告",
         "",
-        "> 本报告只统计明确同意、通过注意力检查且完成时间合理的真实答卷；不保存姓名、手机号等个人身份信息。",
+        "> 本报告只统计明确同意、完成时间合理且字段逻辑有效的真实答卷；不保存姓名、手机号等个人身份信息。",
         "",
         "## 数据质量",
         "",
@@ -370,7 +369,7 @@ def write_survey_report(
                 "",
                 price_summary.to_markdown(index=False, floatfmt=".2f")
                 if not price_summary.empty
-                else "尚无价格阶梯数据。",
+                else "尚无价格区间数据。",
             ]
         )
     output_path.write_text("\n".join(lines), encoding="utf-8")
