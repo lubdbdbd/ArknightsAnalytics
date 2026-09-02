@@ -35,15 +35,56 @@ def test_exports_sqlite_and_reports(tmp_path) -> None:
             }
         ]
     )
+    taobao_listings = pd.DataFrame(
+        [
+            {
+                "item_id": "1",
+                "query_scope": "market_baseline",
+                "ip_scope": "arknights",
+                "category": "亚克力立牌",
+                "price": 39.0,
+                "sales_proxy_min": 100.0,
+            }
+        ]
+    )
+    taobao_signals = pd.DataFrame(
+        [{"operator": "甲", "taobao_observed": True, "commercial_heat_score": 80.0}]
+    )
+    content_commerce = pd.DataFrame(
+        [{"operator": "甲", "business_quadrant": "核心商业角色"}]
+    )
+    targeted_summary = pd.DataFrame(
+        [{"operator": "甲", "search_precision": 0.8}]
+    )
 
     database_path = tmp_path / "operations.db"
-    export_sqlite(videos, heat, erp, sku, database_path)
+    export_sqlite(
+        videos,
+        heat,
+        erp,
+        sku,
+        database_path,
+        taobao_listings=taobao_listings,
+        taobao_market_signals=taobao_signals,
+        content_commerce=content_commerce,
+        targeted_query_summary=targeted_summary,
+    )
     with sqlite3.connect(database_path) as connection:
         assert connection.execute("SELECT COUNT(*) FROM public_videos").fetchone()[0] == 1
+        assert connection.execute("SELECT COUNT(*) FROM taobao_public_snapshots").fetchone()[0] == 1
 
     report_path = tmp_path / "report.md"
     workbook_path = tmp_path / "dashboard.xlsx"
     write_report(heat, sku, report_path)
-    write_workbook(heat, erp, sku, workbook_path)
+    write_workbook(
+        heat,
+        erp,
+        sku,
+        workbook_path,
+        taobao_listings=taobao_listings,
+        taobao_market_signals=taobao_signals,
+        content_commerce=content_commerce,
+        targeted_query_summary=targeted_summary,
+    )
     assert "角色榜单规模：1" in report_path.read_text(encoding="utf-8")
     assert workbook_path.exists()

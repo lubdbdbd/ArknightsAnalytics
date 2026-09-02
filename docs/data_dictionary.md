@@ -68,3 +68,33 @@
 - `interaction_total`：点赞、收藏、评论合计。
 - `interaction_per_note`：互动总量除以笔记量。
 - `favorite_rate` / `comment_rate`：生态互动结构。
+
+## taobao_public_snapshots.csv
+
+- `item_id`：可跨期追踪的淘宝商品 ID。
+- `rank`：固定查询词与排序下的自然结果位置。
+- `price`：页面公开展示价格，不代表最终实付价。
+- `sales_proxy_min`：公开“收货人数”的最低值代理。
+- `sales_proxy_censored`：`100+` 等区间展示是否被截断。
+- `category`：规则归类后的周边品类。
+- `rights_type`：官方/授权、同人原创或未标明。
+- `fulfillment_type`：现货、预售/补款或未标明。
+- `operator_mentions`：异格名、基础名和昵称治理后的角色归因。
+- `target_relevance`：定向查询结果与目标角色的相关度。
+- `ip_scope`：`arknights`、`endfield` 或其他，避免两个产品线混算。
+- `is_simulated`：固定为 `false`。
+
+## taobao_role_signals.csv
+
+- `organic_sku_count`：全 IP 自然销量页观察到的角色商品数。
+- `sales_proxy_min`：多角色商品按角色数等分后的公开收货人数下界。
+- `market_visibility`：按搜索排名衰减后的可见度。
+- `category_breadth`：角色商品覆盖品类数。
+- `commercial_heat_score`：需求、供给、可见度、价格和品类宽度的综合商业信号。
+- `commerce_confidence_score` / `commerce_data_grade`：样本量与数值覆盖形成的可信度。
+
+## content_commerce_matrix.csv
+
+- `business_quadrant`：核心商业角色、内容热但供给待验证、内容长尾但商品信号强、低成本观察。
+- `content_commerce_gap`：内容热度减商业信号，正值较大表示存在商业验证缺口。
+- `commercial_validation_priority`：内容热度、深层互动、商业缺口和低置信度共同形成的补采优先级。

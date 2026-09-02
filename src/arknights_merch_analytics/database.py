@@ -14,6 +14,10 @@ def export_sqlite(
     output_path: Path,
     content_scores: pd.DataFrame | None = None,
     xhs_snapshots: pd.DataFrame | None = None,
+    taobao_listings: pd.DataFrame | None = None,
+    taobao_market_signals: pd.DataFrame | None = None,
+    content_commerce: pd.DataFrame | None = None,
+    targeted_query_summary: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(output_path) as connection:
@@ -25,6 +29,14 @@ def export_sqlite(
             content_scores.to_sql("official_content_scores", connection, if_exists="replace", index=False)
         if xhs_snapshots is not None and not xhs_snapshots.empty:
             xhs_snapshots.to_sql("xiaohongshu_ecosystem", connection, if_exists="replace", index=False)
+        if taobao_listings is not None and not taobao_listings.empty:
+            taobao_listings.to_sql("taobao_public_snapshots", connection, if_exists="replace", index=False)
+        if taobao_market_signals is not None and not taobao_market_signals.empty:
+            taobao_market_signals.to_sql("taobao_role_signals", connection, if_exists="replace", index=False)
+        if content_commerce is not None and not content_commerce.empty:
+            content_commerce.to_sql("content_commerce_matrix", connection, if_exists="replace", index=False)
+        if targeted_query_summary is not None and not targeted_query_summary.empty:
+            targeted_query_summary.to_sql("taobao_target_query_qa", connection, if_exists="replace", index=False)
         connection.executescript(
             """
             CREATE INDEX IF NOT EXISTS idx_public_videos_bvid ON public_videos(bvid);

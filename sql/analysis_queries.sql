@@ -103,3 +103,43 @@ SELECT
 FROM xiaohongshu_ecosystem
 WHERE platform = 'xiaohongshu'
 ORDER BY snapshot_date;
+
+-- 9. 淘宝全 IP 自然销量页角色商业信号
+SELECT
+    commerce_rank,
+    operator,
+    organic_sku_count,
+    ROUND(sales_proxy_min, 2) AS sales_proxy_lower_bound,
+    ROUND(median_price, 2) AS median_price,
+    ROUND(commercial_heat_score, 2) AS commercial_heat_score,
+    ROUND(commerce_confidence_score, 2) AS confidence,
+    commerce_data_grade
+FROM taobao_role_signals
+WHERE taobao_observed = 1
+ORDER BY commerce_rank;
+
+-- 10. 内容热但淘宝商业数据不足：下一轮采集优先级
+SELECT
+    operator,
+    ROUND(cross_platform_heat, 2) AS content_heat,
+    ROUND(commercial_heat_score, 2) AS commercial_heat,
+    ROUND(content_commerce_gap, 2) AS content_commerce_gap,
+    business_quadrant,
+    ROUND(commercial_validation_priority, 2) AS validation_priority
+FROM content_commerce_matrix
+ORDER BY commercial_validation_priority DESC
+LIMIT 15;
+
+-- 11. 淘宝公开商品品类价格带与销量代理
+SELECT
+    category,
+    COUNT(DISTINCT item_id) AS organic_sku_count,
+    ROUND(MIN(price), 2) AS min_price,
+    ROUND(AVG(price), 2) AS avg_price,
+    ROUND(MAX(price), 2) AS max_price,
+    ROUND(SUM(sales_proxy_min), 2) AS displayed_recipient_lower_bound
+FROM taobao_public_snapshots
+WHERE query_scope = 'market_baseline'
+  AND ip_scope = 'arknights'
+GROUP BY category
+ORDER BY displayed_recipient_lower_bound DESC;

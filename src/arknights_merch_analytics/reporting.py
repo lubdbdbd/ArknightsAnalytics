@@ -76,6 +76,85 @@ def save_figures(
         plt.close(fig)
 
 
+def save_commerce_figures(
+    listings: pd.DataFrame,
+    market_signals: pd.DataFrame,
+    content_commerce: pd.DataFrame,
+    output_dir: Path,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    plt.style.use("seaborn-v0_8-whitegrid")
+    _configure_fonts()
+
+    observed = content_commerce[content_commerce["taobao_observed"]].copy()
+    if not observed.empty:
+        fig, ax = plt.subplots(figsize=(10, 7))
+        sizes = 80 + observed["organic_sku_count"].fillna(0) * 35
+        ax.scatter(
+            observed["cross_platform_heat"],
+            observed["commercial_heat_score"],
+            s=sizes,
+            c=observed["commercial_validation_priority"],
+            cmap="viridis",
+            alpha=0.82,
+        )
+        placed_labels: list[tuple[float, float]] = []
+        for _, row in observed.iterrows():
+            position = (float(row["cross_platform_heat"]), float(row["commercial_heat_score"]))
+            offset_index = sum(
+                abs(previous_x - position[0]) < 2 and abs(previous_y - position[1]) < 2
+                for previous_x, previous_y in placed_labels
+            )
+            placed_labels.append(position)
+            ax.annotate(
+                row["operator"],
+                (row["cross_platform_heat"], row["commercial_heat_score"]),
+                xytext=(5, 4 + offset_index * 13),
+                textcoords="offset points",
+            )
+        ax.axvline(content_commerce["cross_platform_heat"].median(), color="#777777", linestyle="--")
+        ax.axhline(observed["commercial_heat_score"].median(), color="#777777", linestyle="--")
+        ax.set_title("内容热度 × 淘宝商业信号（首批公开销量页样本）")
+        ax.set_xlabel("Cross-platform content heat")
+        ax.set_ylabel("Taobao commercial signal")
+        fig.tight_layout()
+        fig.savefig(output_dir / "content_commerce_quadrant.png", dpi=180)
+        plt.close(fig)
+
+    baseline = listings[
+        (listings["query_scope"] == "market_baseline")
+        & (listings["ip_scope"] == "arknights")
+    ].copy()
+    baseline = baseline[baseline["numeric_sales_available"]]
+    if not baseline.empty:
+        category = baseline.groupby("category", as_index=False).agg(
+            organic_sku_count=("item_id", "nunique"),
+            sales_proxy_min=("sales_proxy_min", "sum"),
+            median_price=("price", "median"),
+        )
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.scatter(
+            category["median_price"],
+            category["sales_proxy_min"],
+            s=80 + category["organic_sku_count"] * 45,
+            color="#dd6b20",
+            alpha=0.82,
+        )
+        for _, row in category.iterrows():
+            ax.annotate(
+                row["category"],
+                (row["median_price"], row["sales_proxy_min"]),
+                xytext=(5, 4),
+                textcoords="offset points",
+            )
+        ax.set_title("淘宝周边品类价格带与公开收货人数代理")
+        ax.set_xlabel("Median displayed price")
+        ax.set_ylabel("Displayed recipient lower-bound proxy")
+        fig.tight_layout()
+        fig.savefig(output_dir / "taobao_category_demand.png", dpi=180)
+        plt.close(fig)
+
+
 def write_report(
     operator_heat: pd.DataFrame,
     sku: pd.DataFrame,
@@ -161,6 +240,10 @@ def write_workbook(
     output_path: Path,
     content_scores: pd.DataFrame | None = None,
     xhs_snapshots: pd.DataFrame | None = None,
+    taobao_listings: pd.DataFrame | None = None,
+    taobao_market_signals: pd.DataFrame | None = None,
+    content_commerce: pd.DataFrame | None = None,
+    targeted_query_summary: pd.DataFrame | None = None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(output_path, engine="openpyxl") as writer:
@@ -169,16 +252,118 @@ def write_workbook(
             content_scores.to_excel(writer, sheet_name="Official Content Scores", index=False)
         if xhs_snapshots is not None and not xhs_snapshots.empty:
             xhs_snapshots.to_excel(writer, sheet_name="XHS Ecosystem", index=False)
+        if taobao_listings is not None and not taobao_listings.empty:
+            taobao_listings.to_excel(writer, sheet_name="Taobao Public Snapshots", index=False)
+        if taobao_market_signals is not None and not taobao_market_signals.empty:
+            taobao_market_signals.to_excel(writer, sheet_name="Taobao Role Signals", index=False)
+        if content_commerce is not None and not content_commerce.empty:
+            content_commerce.to_excel(writer, sheet_name="Content Commerce Matrix", index=False)
+        if targeted_query_summary is not None and not targeted_query_summary.empty:
+            targeted_query_summary.to_excel(writer, sheet_name="Target Query QA", index=False)
         erp.to_excel(writer, sheet_name="ERP Mock", index=False)
         sku.to_excel(writer, sheet_name="SKU Recommendations", index=False)
         notes = pd.DataFrame(
             {
-                "item": ["Public data", "Manual data", "Simulated data"],
+                "item": ["Public content", "Taobao snapshot", "Manual data", "Simulated data"],
                 "definition": [
                     "Bilibili and Weibo official-account public aggregate metrics",
+                    "Visible listing ID, price, rank and recipient lower-bound proxy; not exact sales",
                     "Category assumptions and survey template",
                     "Orders, sales, inventory and return data; not real sales",
                 ],
             }
         )
         notes.to_excel(writer, sheet_name="Data Notes", index=False)
+
+
+def write_commerce_report(
+    listings: pd.DataFrame,
+    market_signals: pd.DataFrame,
+    content_commerce: pd.DataFrame,
+    targeted_summary: pd.DataFrame,
+    output_path: Path,
+) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    baseline = listings[
+        (listings["query_scope"] == "market_baseline")
+        & (listings["ip_scope"] == "arknights")
+    ]
+    observed = market_signals[market_signals["taobao_observed"]]
+    top_signals = observed.head(15)[
+        [
+            "commerce_rank",
+            "operator",
+            "organic_sku_count",
+            "sales_proxy_min",
+            "median_price",
+            "commercial_heat_score",
+            "commerce_confidence_score",
+            "commerce_data_grade",
+        ]
+    ]
+    priority = content_commerce.head(15)[
+        [
+            "operator",
+            "cross_platform_heat",
+            "commercial_heat_score",
+            "content_commerce_gap",
+            "business_quadrant",
+            "commercial_validation_priority",
+        ]
+    ]
+    category = baseline.groupby("category", as_index=False).agg(
+        organic_sku_count=("item_id", "nunique"),
+        sales_proxy_min=("sales_proxy_min", "sum"),
+        median_price=("price", "median"),
+        official_share=("rights_type", lambda values: (values == "官方/授权").mean()),
+        presale_share=("fulfillment_type", lambda values: (values == "预售/补款").mean()),
+    )
+    lines = [
+        "# 淘宝公开商品快照与周边商业化分析",
+        "",
+        "> 公开展示的“收货人数”仅作为销量下界代理；`100+` 等档位按最低值记录，不能用于声称精确销量或真实 GMV。",
+        "",
+        "## 样本与质量控制",
+        "",
+        f"- 公开商品快照：{len(listings)} 条；其中全 IP 自然结果 {len(baseline)} 条。",
+        f"- 有全 IP 销量页角色信号：{int(market_signals['taobao_observed'].sum())} / {len(market_signals)} 名角色。",
+        "- 广告跳转位不具备稳定商品 ID，未纳入固定 SKU 时间序列。",
+        "- 定向搜索结果设置角色相关性门禁，避免把阿米娅、凯尔希等跨角色商品误记为新约能天使供给。",
+        "- 每条数据保留查询词、排序方式、快照时间、商品 ID、原始文本与来源文件，支持复核。",
+        "",
+        "## 全 IP 销量页角色商业信号",
+        "",
+        top_signals.to_markdown(index=False, floatfmt=".2f"),
+        "",
+        "## 内容热度 × 商业热度验证优先级",
+        "",
+        priority.to_markdown(index=False, floatfmt=".2f"),
+        "",
+        "## 品类结构",
+        "",
+        category.sort_values("sales_proxy_min", ascending=False).to_markdown(index=False, floatfmt=".2f"),
+        "",
+        "## 定向搜索质量",
+        "",
+        targeted_summary.to_markdown(index=False, floatfmt=".2f")
+        if not targeted_summary.empty
+        else "暂无定向搜索样本。",
+        "",
+        "## 周边运营分析维度",
+        "",
+        "1. 需求代理：公开收货人数下界、销量排名与搜索可见度，不等同于真实成交量。",
+        "2. 供给强度：自然 SKU 数、品类宽度、官方/同人结构及预售占比。",
+        "3. 价格承载：中位价、四分位价格带及高客单品类占比。",
+        "4. 竞争结构：角色商品覆盖、头部结果集中度与广告位干扰。",
+        "5. 内容转化缺口：内容热度高但淘宝信号弱的角色优先补采收藏、评价和周期销量快照。",
+        "6. 生命周期：后续以相同商品 ID 周期复采，计算价格变动、销量档位跃迁、上新和下架率。",
+        "7. 商品策略：低客单验证款、利润承接款、高风险预售款分别设置不同准入门槛。",
+        "8. 数据治理：真实公开数据、人工假设和模拟 ERP 分表存储，所有结论携带置信度。",
+        "",
+        "## 当前限制",
+        "",
+        "- 当前仅为首批横截面，不能计算真实销售速度；至少需要两期相同 SKU 快照。",
+        "- 搜索结果受个性化、广告、地区和活动影响，榜单只能作为公开可见市场信号。",
+        "- 未采集买家身份、评论正文、Cookie 或任何个人信息，也未绕过验证码和平台风控。",
+    ]
+    output_path.write_text("\n".join(lines), encoding="utf-8")

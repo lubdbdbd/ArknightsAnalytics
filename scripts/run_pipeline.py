@@ -13,8 +13,20 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from arknights_merch_analytics.metrics import build_character_heat_matrix, build_sku_recommendations
+from arknights_merch_analytics.commerce import (
+    build_content_commerce_matrix,
+    build_taobao_market_signals,
+    build_targeted_query_summary,
+    load_taobao_snapshots,
+)
 from arknights_merch_analytics.database import export_sqlite
-from arknights_merch_analytics.reporting import save_figures, write_report, write_workbook
+from arknights_merch_analytics.reporting import (
+    save_commerce_figures,
+    save_figures,
+    write_commerce_report,
+    write_report,
+    write_workbook,
+)
 from arknights_merch_analytics.simulation import simulate_erp
 
 
@@ -52,6 +64,17 @@ def main() -> None:
     categories = pd.read_csv(ROOT / "data" / "manual" / "product_categories.csv")
     erp = simulate_erp(operator_heat, categories)
     sku = build_sku_recommendations(erp)
+    taobao_paths = sorted((ROOT / "data" / "public").glob("taobao_*.json"))
+    taobao_listings = pd.DataFrame()
+    taobao_market_signals = pd.DataFrame()
+    targeted_query_summary = pd.DataFrame()
+    content_commerce = pd.DataFrame()
+    if taobao_paths:
+        roster = operator_heat["operator"].tolist()
+        taobao_listings = load_taobao_snapshots(taobao_paths, roster)
+        taobao_market_signals = build_taobao_market_signals(taobao_listings, roster)
+        targeted_query_summary = build_targeted_query_summary(taobao_listings)
+        content_commerce = build_content_commerce_matrix(operator_heat, taobao_market_signals)
 
     processed = ROOT / "data" / "processed"
     processed.mkdir(parents=True, exist_ok=True)
@@ -62,8 +85,28 @@ def main() -> None:
         xhs.to_csv(processed / "platform_ecosystem.csv", index=False, encoding="utf-8-sig")
     erp.to_csv(processed / "erp_mock.csv", index=False, encoding="utf-8-sig")
     sku.to_csv(processed / "sku_recommendations.csv", index=False, encoding="utf-8-sig")
+    if not taobao_listings.empty:
+        taobao_listings.to_csv(processed / "taobao_public_snapshots.csv", index=False, encoding="utf-8-sig")
+        taobao_market_signals.to_csv(processed / "taobao_role_signals.csv", index=False, encoding="utf-8-sig")
+        targeted_query_summary.to_csv(processed / "taobao_target_query_qa.csv", index=False, encoding="utf-8-sig")
+        content_commerce.to_csv(processed / "content_commerce_matrix.csv", index=False, encoding="utf-8-sig")
     save_figures(operator_heat, sku, ROOT / "reports" / "figures", xhs)
+    if not taobao_listings.empty:
+        save_commerce_figures(
+            taobao_listings,
+            taobao_market_signals,
+            content_commerce,
+            ROOT / "reports" / "figures",
+        )
     write_report(operator_heat, sku, ROOT / "reports" / "generated" / "analysis_report.md", xhs)
+    if not taobao_listings.empty:
+        write_commerce_report(
+            taobao_listings,
+            taobao_market_signals,
+            content_commerce,
+            targeted_query_summary,
+            ROOT / "reports" / "generated" / "taobao_commerce_report.md",
+        )
     write_workbook(
         operator_heat,
         erp,
@@ -71,6 +114,10 @@ def main() -> None:
         ROOT / "reports" / "generated" / "operations_dashboard.xlsx",
         content_scores,
         xhs,
+        taobao_listings,
+        taobao_market_signals,
+        content_commerce,
+        targeted_query_summary,
     )
     export_sqlite(
         videos,
@@ -80,10 +127,15 @@ def main() -> None:
         ROOT / "reports" / "generated" / "operations.db",
         content_scores,
         xhs,
+        taobao_listings,
+        taobao_market_signals,
+        content_commerce,
+        targeted_query_summary,
     )
     print(
         f"Pipeline completed with {len(operator_heat)} operators, "
-        f"{len(content_scores)} scored content rows and {len(sku)} simulated SKUs"
+        f"{len(content_scores)} scored content rows, {len(sku)} simulated SKUs "
+        f"and {len(taobao_listings)} Taobao public listing snapshots"
     )
 
 
