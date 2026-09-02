@@ -81,6 +81,9 @@ py -3.12 -m venv .venv
 SQL 资产包括 `sql/business_views.sql` 中的 5 个可复用业务视图，以及
 `sql/analysis_queries.sql` 中覆盖角色决策、价格带、品类漏斗、市场集中度、库存风险和数据质量审计的 20 组查询；字段定义见 `docs/data_dictionary.md`。
 
+面试准备、岗位能力地图、项目拷打题和专业化迭代路线见
+`docs/commercial_operations_interview_guide.md`。
+
 ## 数据合规
 
 采集器仅访问公开聚合数据，默认限速并缓存结果。请遵守数据源的服务条款、robots 约束和访问频率限制。若接口返回风控或验证码，程序会停止，不尝试绕过。小红书开放平台当前不提供读取任意账号笔记的公开能力，因此仓库提供 `data/manual/xiaohongshu_operator_posts_template.csv`。淘宝不提供免授权的大规模商品抓取通道，本项目仅保存人工核验或当前浏览器中可见的低频公开快照，并提供 `data/manual/taobao_snapshot_template.csv` 和 `scripts/import_taobao_snapshot.py` 进行可追溯导入。
