@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>商业试点控制台｜Arknights Analytics</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="hero admin-hero">
+    <div class="eyebrow">LOCAL OPERATIONS CONSOLE</div>
+    <h1>商业试点控制台</h1>
+    <p>查看专项意向进度、录入脱敏供应商报价并导出审计数据。</p>
+  </header>
+  <main class="layout">
+    <section class="panel">
+      <div class="section-heading">
+        <h2>阶段进度</h2>
+        <button id="refreshButton" class="secondary">刷新</button>
+      </div>
+      <div id="summaryCards" class="summary-grid"></div>
+      <p id="summaryMessage" class="message"></p>
+    </section>
+
+    <section class="panel">
+      <h2>录入供应商报价</h2>
+      <p class="muted">只录入内部供应商代码与脱敏授权证据引用，不上传联系人、合同原文或个人信息。</p>
+      <form id="quoteForm" class="admin-form">
+        <label>候选商品<select name="candidate_id" id="quoteCandidate" required></select></label>
+        <label>供应商代码<input name="supplier_code" required placeholder="SUP-001"></label>
+        <label>授权证据引用<input name="rights_evidence_ref" required placeholder="evidence/rights-SUP-001.md"></label>
+        <label>MOQ<input name="moq" type="number" min="1" required></label>
+        <label>单位成本<input name="unit_cost" type="number" min="0.01" step="0.01" required></label>
+        <label>样品成本<input name="sample_cost" type="number" min="0" step="0.01" required></label>
+        <label>交期（天）<input name="lead_time_days" type="number" min="1" max="365" required></label>
+        <label>瑕疵容忍率（%）<input name="defect_allowance_pct" type="number" min="0" max="100" step="0.01" required></label>
+        <label>付款条款<input name="payment_terms" required placeholder="例如：30%订金，验货后付尾款"></label>
+        <label>报价状态
+          <select name="quote_status">
+            <option value="qualified">已核验，进入比价</option>
+            <option value="draft">草稿</option>
+            <option value="accepted">选定</option>
+            <option value="rejected">淘汰</option>
+          </select>
+        </label>
+        <label class="check"><input name="rights_verified" type="checkbox" required> 已核验授权证据</label>
+        <button class="primary" type="submit">保存报价</button>
+        <p id="quoteMessage" class="message"></p>
+      </form>
+    </section>
+
+    <section class="panel export-panel">
+      <h2>导出到运营数据库</h2>
+      <p>将本地采集结果合并到商业试点CSV。导出前会执行知情同意、跨表引用、授权状态和字段范围校验。</p>
+      <button id="exportButton" class="primary">校验并导出</button>
+      <p id="exportMessage" class="message"></p>
+    </section>
+  </main>
+  <footer>仅限本机访问 · 不展示或保存个人身份信息</footer>
+  <script src="/admin.js" defer></script>
+</body>
+</html>

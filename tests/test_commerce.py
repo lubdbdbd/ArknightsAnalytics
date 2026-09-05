@@ -24,9 +24,13 @@ def test_parse_public_price_and_censored_sales_proxy() -> None:
 
 
 def test_classify_merchandise_category() -> None:
-    assert classify_category("明日方舟徽章吧唧") == "徽章吧唧"
-    assert classify_category("亚克力立牌挂件") == "亚克力立牌"
-    assert classify_category("10cm棉花娃娃毛绒玩偶") == "毛绒抱枕"
+    assert classify_category("明日方舟徽章吧唧") == "吧唧（徽章）"
+    assert classify_category("亚克力立牌摇摇乐") == "亚克力制品"
+    assert classify_category("10cm棉花娃娃毛绒玩偶") == "毛绒玩偶"
+    assert classify_category("罗德岛通行认证卡") == "通行证"
+    assert classify_category("明日方舟角色手办模型") == "手办模玩"
+    assert classify_category("角色色纸桌面摆件") == "装饰摆件"
+    assert classify_category("罗德岛水杯和鼠标垫") == "日用生活"
 
 
 def test_snapshot_quality_gate_and_market_signals(tmp_path) -> None:
@@ -41,7 +45,7 @@ def test_snapshot_quality_gate_and_market_signals(tmp_path) -> None:
                 "item_id": "1",
                 "rank": 1,
                 "url": "https://item.taobao.com/item.htm?id=1",
-                "title": "新约能天使 亚克力立牌 ¥ 38 100+人收货 包邮",
+                "title": "明日方舟官方正版 新约能天使 亚克力立牌 ¥ 38 100+人收货 包邮",
             },
             {
                 "item_id": "2",
@@ -83,6 +87,8 @@ def test_snapshot_quality_gate_and_market_signals(tmp_path) -> None:
     signals = build_taobao_market_signals(listings, roster)
 
     assert targeted_summary.iloc[0]["search_precision"] == 0.5
+    assert targeted_summary.iloc[0]["licensed_relevant_results"] == 1
+    assert targeted_summary.iloc[0]["sales_proxy_min_total"] == 100
     assert signals.loc[signals["operator"] == "凯尔希", "taobao_observed"].item()
     assert not signals.loc[signals["operator"] == "望", "taobao_observed"].item()
 

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>新约能天使周边专项调研｜Arknights Analytics</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="eyebrow">ARKNIGHTS ANALYTICS · PRODUCT CONCEPT STUDY</div>
+    <h1>新约能天使周边专项调研</h1>
+    <p>比较两种商品方向，帮助我们判断角色热度是否能转化为真实购买意愿。</p>
+    <div class="privacy">全程匿名 · 不收集姓名、手机号、账号、IP或地址 · 预计2分钟</div>
+  </header>
+
+  <main class="layout">
+    <section class="panel intro">
+      <h2>填写说明</h2>
+      <p>本页面用于非商业学习项目的商品概念验证。商品图位置目前仅为结构示意，正式投放前只会使用已获授权的商品素材。</p>
+      <button id="startButton" class="primary">开始评价两个方案</button>
+    </section>
+
+    <form id="surveyForm" class="hidden" novalidate>
+      <section class="panel">
+        <h2>你的游戏与消费经历</h2>
+        <label>接触《明日方舟》或相关角色内容大约多少个月？
+          <input name="experience_months" type="number" min="0" max="120" required placeholder="例如：36">
+        </label>
+        <fieldset>
+          <legend>你对新约能天使的喜爱程度</legend>
+          <div class="scale" data-scale="role_affinity"></div>
+        </fieldset>
+        <label class="check"><input name="prior_buyer" type="checkbox"> 过去12个月购买过《明日方舟》官方或授权周边</label>
+      </section>
+
+      <section id="candidateGrid" class="candidate-grid"></section>
+
+      <section class="panel">
+        <h2>最终选择</h2>
+        <fieldset>
+          <legend>如果只能选择一个，你更希望购买哪种？</legend>
+          <div id="preferredOptions" class="choice-list"></div>
+        </fieldset>
+        <label>你是从哪里看到本问卷的？
+          <select name="source_channel" required>
+            <option value="direct">直接访问或朋友分享</option>
+            <option value="bilibili">B站</option>
+            <option value="weibo">微博</option>
+            <option value="xiaohongshu">小红书</option>
+            <option value="qq_group">QQ群</option>
+            <option value="offline">线下</option>
+          </select>
+        </label>
+        <label class="check consent"><input name="consent" type="checkbox" required> 我已阅读说明，并同意匿名提交上述调研信息</label>
+        <button class="primary" type="submit">匿名提交</button>
+        <p id="formMessage" class="message" role="status"></p>
+      </section>
+    </form>
+  </main>
+
+  <footer>Arknights Analytics｜《明日方舟》IP周边选品与商品运营分析平台</footer>
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+﻿user_segment,respondent_count,buyer_share,high_intent_share,median_annual_spend,median_monthly_budget,median_acceptable_price,respondent_share
+core_buyer,92,1.0,0.5760869565217391,750.0,400.0,150.0,0.3786008230452675
+observer,86,0.0,0.0,100.0,200.0,100.0,0.35390946502057613
+potential_buyer,44,0.0,1.0,350.0,200.0,100.0,0.18106995884773663
+occasional_buyer,21,1.0,0.5238095238095238,350.0,125.0,150.0,0.08641975308641975

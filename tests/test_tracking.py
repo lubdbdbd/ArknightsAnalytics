@@ -13,7 +13,7 @@ def _listing_rows() -> pd.DataFrame:
         "item_id": "1001",
         "target_operator": "新约能天使",
         "operator_mentions": "新约能天使",
-        "category": "亚克力立牌",
+        "category": "亚克力制品",
         "raw_text": "明日方舟 新约能天使 亚克力立牌",
         "url": "https://item.taobao.com/item.htm?id=1001",
         "query": "明日方舟 新约能天使 周边",
@@ -63,3 +63,11 @@ def test_single_snapshot_is_only_baseline() -> None:
     metrics = build_sku_timeseries_metrics(listings)
     assert metrics.iloc[0]["lifecycle_signal"] == "baseline_pending_recapture"
     assert metrics.iloc[0]["timeseries_evidence_grade"] == "D"
+
+
+def test_unlicensed_snapshot_is_excluded_from_tracking() -> None:
+    listings = _listing_rows()
+    listings["rights_type"] = "未标明"
+
+    assert build_tracking_registry(listings).empty
+    assert build_sku_timeseries_metrics(listings).empty

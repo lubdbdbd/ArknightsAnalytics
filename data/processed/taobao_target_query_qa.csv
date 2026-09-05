@@ -1,2 +1,2 @@
-﻿operator,search_results,relevant_results,search_precision,numeric_sales_coverage,sales_proxy_min_total,sales_proxy_is_lower_bound,median_price,price_p25,price_p75,category_breadth,official_share,fanmade_share,presale_share,free_shipping_rate,return_insurance_rate,top10_sales_concentration
-新约能天使,50,35,0.7,1.0,249.0,True,37.9,12.99,51.06,6,0.02857142857142857,0.4,0.08571428571428572,0.7428571428571429,0.17142857142857143,0.7028112449799196
+﻿operator,search_results,relevant_results,search_precision,licensed_relevant_results,licensed_share_of_relevant,numeric_sales_coverage,sales_proxy_min_total,sales_proxy_is_lower_bound,median_price,price_p25,price_p75,category_breadth,official_share,fanmade_share,presale_share,free_shipping_rate,return_insurance_rate,top10_sales_concentration
+新约能天使,50,35,0.7,1,0.02857142857142857,1.0,100.0,True,104.0,104.0,104.0,1,0.02857142857142857,0.4,0.08571428571428572,0.7428571428571429,0.17142857142857143,1.0

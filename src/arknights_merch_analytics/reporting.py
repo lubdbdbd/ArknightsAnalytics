@@ -124,6 +124,7 @@ def save_commerce_figures(
     baseline = listings[
         (listings["query_scope"] == "market_baseline")
         & (listings["ip_scope"] == "arknights")
+        & (listings["rights_type"] == "官方/授权")
     ].copy()
     baseline = baseline[baseline["numeric_sales_available"]]
     if not baseline.empty:
@@ -211,9 +212,9 @@ def write_report(
         "",
         "## 运营建议",
         "",
-        "1. 高热度角色优先采用徽章、色纸和立牌完成低风险需求验证，再根据售罄率追加毛绒或手办预售。",
+        "1. 高热度角色优先采用吧唧（徽章）、通行证和亚克力制品完成低风险需求验证，再根据售罄率追加毛绒玩偶、装饰摆件或手办模玩预售。",
         "2. 高生产风险品类使用预售和分批补货，避免把内容热度直接等同于购买需求。",
-        "3. 直播间以低客单引流款开场，以立牌和组合套装承接转化，高客单手办放在核心内容讲解后。",
+        "3. 直播间以吧唧和通行证等低客单款开场，以亚克力制品和组合套装承接转化，高客单手办模玩放在核心内容讲解后。",
         "4. 正式商业决策前必须补充真实用户调研、商品收藏加购和历史订单数据。",
         "",
         "## 方法限制",
@@ -329,6 +330,7 @@ def write_commerce_report(
     baseline = listings[
         (listings["query_scope"] == "market_baseline")
         & (listings["ip_scope"] == "arknights")
+        & (listings["rights_type"] == "官方/授权")
     ]
     observed = market_signals[market_signals["taobao_observed"]]
     top_signals = observed.head(15)[
@@ -363,11 +365,11 @@ def write_commerce_report(
     lines = [
         "# 淘宝公开商品快照与周边商业化分析",
         "",
-        "> 公开展示的“收货人数”仅作为销量下界代理；`100+` 等档位按最低值记录，不能用于声称精确销量或真实 GMV。",
+        "> 核心商业指标仅统计标题中明确标注官方/正版/授权的实体周边；同人及授权状态未标明商品只保留在质量审计中。公开展示的“收货人数”仅作为销量下界代理，不能用于声称精确销量或真实 GMV。",
         "",
         "## 样本与质量控制",
         "",
-        f"- 公开商品快照：{len(listings)} 条；其中全 IP 自然结果 {len(baseline)} 条。",
+        f"- 公开商品快照：{len(listings)} 条；其中进入核心计算的全 IP 官方/授权自然结果 {len(baseline)} 条。",
         f"- 有全 IP 销量页角色信号：{int(market_signals['taobao_observed'].sum())} / {len(market_signals)} 名角色。",
         "- 广告跳转位不具备稳定商品 ID，未纳入固定 SKU 时间序列。",
         "- 定向搜索结果设置角色相关性门禁，避免把阿米娅、凯尔希等跨角色商品误记为新约能天使供给。",
@@ -394,7 +396,7 @@ def write_commerce_report(
         "## 周边运营分析维度",
         "",
         "1. 需求代理：公开收货人数下界、销量排名与搜索可见度，不等同于真实成交量。",
-        "2. 供给强度：自然 SKU 数、品类宽度、官方/同人结构及预售占比。",
+        "2. 供给强度：正版自然 SKU 数、7类货盘宽度及预售占比；同人和未标明商品仅作审计。",
         "3. 价格承载：中位价、四分位价格带及高客单品类占比。",
         "4. 竞争结构：角色商品覆盖、头部结果集中度与广告位干扰。",
         "5. 内容转化缺口：内容热度高但淘宝信号弱的角色优先补采收藏、评价和周期销量快照。",

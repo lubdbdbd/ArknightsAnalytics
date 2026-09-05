@@ -1,0 +1,3 @@
+﻿lead_id,candidate_id,operator,candidate_category,observed_category,evidence_scope,seller_hint,item_id,item_url,observed_price,sales_proxy_min,snapshot_at,public_rights_signal,contact_status,quote_status,rights_verification_status,data_type,is_simulated
+PUBLIC-001,CAND-002,新约能天使,亚克力制品,毛绒玩偶,adjacent_role_category,梦谷小屋,989772699900,https://item.taobao.com/item.htm?id=989772699900,104.0,100.0,2026-09-02T11:55:00+08:00,官方/授权,not_contacted,not_a_quote,requires_direct_verification,public_retail_lead,False
+PUBLIC-002,CAND-006,新约能天使,吧唧（徽章）,毛绒玩偶,adjacent_role_category,梦谷小屋,989772699900,https://item.taobao.com/item.htm?id=989772699900,104.0,100.0,2026-09-02T11:55:00+08:00,官方/授权,not_contacted,not_a_quote,requires_direct_verification,public_retail_lead,False

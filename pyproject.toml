@@ -3,9 +3,9 @@ requires = ["setuptools>=75"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "arknights-merch-analytics"
+name = "arknights-analytics"
 version = "0.1.0"
-description = "Public-content heat analytics and transparent merchandising simulation for Arknights IP"
+description = "Arknights IP merchandise selection and product operations analytics platform"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}

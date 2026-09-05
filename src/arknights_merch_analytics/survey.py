@@ -135,6 +135,9 @@ def validate_survey_responses(
     )
     for column in numeric_columns:
         frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    if "validation_profile" not in frame.columns:
+        frame["validation_profile"] = "digital_form_export"
+    anonymous_batch = frame["validation_profile"].eq("anonymous_batch_without_timing")
     frame["submitted_at"] = pd.to_datetime(frame["submitted_at"], errors="coerce", utc=True)
     frame["consent"] = frame["consent"].astype(str).str.lower().isin({"1", "true", "yes", "是"})
     frame["has_purchased_merch"] = (
@@ -147,10 +150,18 @@ def validate_survey_responses(
             reasons[position].append(reason)
 
     flag(~frame["consent"], "no_consent")
-    flag(frame["submitted_at"].isna(), "invalid_timestamp")
-    flag(frame["completion_seconds"].lt(45) | frame["completion_seconds"].isna(), "too_fast")
+    flag(frame["submitted_at"].isna() & ~anonymous_batch, "invalid_timestamp")
+    flag(
+        (frame["completion_seconds"].lt(45) | frame["completion_seconds"].isna())
+        & ~anonymous_batch,
+        "too_fast",
+    )
     flag(~frame["purchase_intent"].between(1, 5), "invalid_purchase_intent")
-    flag(~frame["acceptable_price"].between(1, 5000), "invalid_acceptable_price")
+    flag(
+        ~frame["acceptable_price"].between(1, 5000)
+        & ~(anonymous_batch & frame["acceptable_price"].isna()),
+        "invalid_acceptable_price",
+    )
     flag(~frame["limited_preference"].between(1, 5), "invalid_limited_preference")
     flag(frame["player_tenure_months"].lt(0) | frame["player_tenure_months"].gt(120), "invalid_player_tenure")
     flag(frame["monthly_merch_budget"].lt(0) | frame["monthly_merch_budget"].gt(10000), "invalid_monthly_budget")

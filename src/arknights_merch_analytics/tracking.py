@@ -15,6 +15,7 @@ def _prepare_observations(listings: pd.DataFrame) -> pd.DataFrame:
         frame["item_id"].fillna("").astype(str).ne("")
         & frame["snapshot_at"].notna()
         & frame["ip_scope"].eq("arknights")
+        & frame["rights_type"].eq("官方/授权")
         & (
             frame["query_scope"].ne("targeted")
             | frame["target_relevance"].fillna(0).ge(0.50)
@@ -188,7 +189,7 @@ def write_tracking_report(
     lines = [
         "# 固定 SKU 时间序列追踪报告",
         "",
-        "> 数据仅来自低频人工核验的公开商品快照；销量字段是公开展示下界代理，不是精确成交量。",
+        "> 数据仅来自低频人工核验且明确标注官方/正版/授权的公开商品快照；销量字段是公开展示下界代理，不是精确成交量。",
         "",
         "## 当前状态",
         "",

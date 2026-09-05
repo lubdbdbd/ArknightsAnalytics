@@ -1,0 +1,3 @@
+﻿decision_id,candidate_id,decision,rationale,decided_at,evidence_ref,is_simulated
+DEC-20260905-001,CAND-002,approved,批准新约能天使亚克力制品进入专项意向与供应商核验；作为主力展示款验证角色视觉吸引力和中等价格带，不代表已经采购或备货,2026-09-05,docs/pilot_new_exusiai_validation_plan.md#方案-a,False
+DEC-20260905-002,CAND-006,approved,批准新约能天使吧唧（徽章）进入专项意向与供应商核验；作为低客单验证款观察转化门槛和组合购买意愿，不代表已经采购或备货,2026-09-05,docs/pilot_new_exusiai_validation_plan.md#方案-b,False

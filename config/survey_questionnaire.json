@@ -1,9 +1,19 @@
 {
   "questionnaire_id": "arknights_merch_demand_v2",
-  "version": "2.1",
+  "version": "2.2",
   "title": "博士，想听听你对《明日方舟》周边的想法",
   "estimated_minutes": 5,
   "target_population": "年满18周岁的明日方舟玩家或IP衍生品潜在消费者",
+  "merch_scope": "仅调查官方或正版授权实体周边，不包含盗版、无授权商品和数字权益",
+  "category_price_bands": {
+    "亚克力制品": ["30元以内", "31-50元", "51-80元", "80元以上"],
+    "通行证": ["20元以内", "21-40元", "41-60元", "60元以上"],
+    "吧唧（徽章）": ["15元以内", "16-25元", "26-35元", "36元以上"],
+    "毛绒玩偶": ["80元以内", "81-150元", "151-250元", "250元以上"],
+    "手办模玩": ["200元以内", "201-500元", "501-1000元", "1000元以上"],
+    "装饰摆件": ["50元以内", "51-100元", "101-200元", "200元以上"],
+    "日用生活": ["50元以内", "51-100元", "101-200元", "200元以上"]
+  },
   "sections": [
     {
       "id": "about_you",
@@ -18,7 +28,7 @@
       "id": "shopping_habits",
       "title": "聊聊你平时怎么买周边",
       "questions": [
-        {"id": "has_purchased_merch", "type": "single", "required": true, "options": ["买过《明日方舟》周边", "没买过方舟周边，但买过其他ACG周边", "还没有买过周边"]},
+        {"id": "has_purchased_merch", "type": "single", "required": true, "scope": "official_or_licensed_only", "options": ["买过《明日方舟》官方或正版授权周边", "没买过方舟正版周边，但买过其他ACG官方或正版授权周边", "还没有买过正版周边"]},
         {"id": "purchase_frequency_band", "type": "single", "required": true, "options": ["过去一年没买过", "1-2次", "3-5次", "6-10次", "10次以上"]},
         {"id": "annual_spend_band", "type": "single", "required": true, "options": ["0元", "1-200元", "201-500元", "501-1000元", "1001-3000元", "3000元以上", "记不清了"]},
         {"id": "monthly_budget_band", "type": "single", "required": true, "options": ["暂时没有预算", "100元以内", "101-300元", "301-500元", "501-1000元", "1000元以上", "看商品再决定"]},
@@ -33,7 +43,7 @@
       "title": "如果要出新周边，你更想看到什么",
       "questions": [
         {"id": "preferred_operators", "type": "rank", "required": true, "max_choices": 3, "randomize": true},
-        {"id": "category", "type": "single", "required": true, "randomize": true},
+        {"id": "category", "type": "single", "required": true, "randomize": true, "scope": "official_or_licensed_only", "options": ["亚克力制品", "通行证", "吧唧（徽章）", "毛绒玩偶", "手办模玩", "装饰摆件", "日用生活"]},
         {"id": "purchase_intent", "type": "single", "required": true, "options": ["很想买", "比较想买", "要看价格和成品", "大概不会买", "完全不会买"]},
         {"id": "limited_preference", "type": "single", "required": true, "options": ["会明显增加购买意愿", "会有一点吸引力", "影响不大", "反而会因为难买而放弃"]},
         {"id": "preorder_tolerance_band", "type": "single", "required": true, "options": ["只考虑现货", "1个月以内", "1-2个月", "2-3个月", "3-6个月", "只要喜欢，时间不是主要问题"]}

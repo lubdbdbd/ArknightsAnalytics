@@ -78,3 +78,38 @@ def test_archive_classification_and_campaign_attribution(tmp_path) -> None:
     assert (tmp_path / "figures" / "bilibili_content_type_performance.png").exists()
     assert (tmp_path / "figures" / "bilibili_campaign_exposure.png").exists()
     assert "官号公开视频：3 条" in report_path.read_text(encoding="utf-8")
+
+
+def test_archive_quarantines_known_cross_project_entity() -> None:
+    raw = pd.DataFrame(
+        [
+            {
+                "bvid": "BV-invalid",
+                "title": "《明日方舟》干员「丰川祥子」技能展示PV",
+                "published_at": "2026-01-10T03:00:00+00:00",
+                "view": 1000,
+                "like": 100,
+                "coin": 20,
+                "favorite": 30,
+                "share": 10,
+                "reply": 8,
+                "danmaku": 12,
+            },
+            {
+                "bvid": "BV-valid",
+                "title": "《明日方舟》限定干员「甲」前瞻PV",
+                "published_at": "2026-01-11T03:00:00+00:00",
+                "view": 1000,
+                "like": 100,
+                "coin": 20,
+                "favorite": 30,
+                "share": 10,
+                "reply": 8,
+                "danmaku": 12,
+            },
+        ]
+    )
+
+    archive = build_bilibili_archive(raw)
+
+    assert archive["bvid"].tolist() == ["BV-valid"]

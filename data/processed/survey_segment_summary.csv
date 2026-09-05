@@ -1,1 +1,5 @@
 ﻿user_segment,respondent_count,respondent_share,prior_buyer_share,purchase_intent_mean,high_intent_share,acceptable_price_median,annual_merch_spend_median,monthly_budget_median,preorder_tolerance_days_median
+core_buyer,93,0.38271604938271603,1.0,3.6666666666666665,0.5698924731182796,150.0,750.0,400.0,45.0
+observer,86,0.35390946502057613,0.0,2.511627906976744,0.0,100.0,100.0,200.0,45.0
+potential_buyer,44,0.18106995884773663,0.0,4.2272727272727275,1.0,100.0,350.0,200.0,75.0
+occasional_buyer,20,0.0823045267489712,1.0,3.8,0.55,150.0,350.0,50.0,45.0

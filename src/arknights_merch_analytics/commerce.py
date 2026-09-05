@@ -12,12 +12,13 @@ from arknights_merch_analytics.metrics import percentile_score
 
 
 CATEGORY_PATTERNS = {
-    "徽章吧唧": ("徽章", "吧唧", "纽扣"),
-    "亚克力立牌": ("亚克力", "压克力", "立牌", "摇摇乐", "通行证"),
-    "纸品卡牌": ("色纸", "卡片", "信纸", "明信片", "拍立得", "镭射票", "小卡"),
-    "毛绒抱枕": ("毛绒", "棉花娃娃", "玩偶", "团子", "抱枕", "靠枕"),
-    "服装COS": ("cosplay", "短袖", "卫衣", "jk", "披风", "服装", "衣服", "裙"),
-    "生活数码": ("键帽", "鼠标垫", "桌垫", "水杯", "马克杯", "手链", "手绳", "笔记本", "书包"),
+    "通行证": ("通行证", "通行认证", "身份认证卡"),
+    "吧唧（徽章）": ("徽章", "吧唧", "纽扣章"),
+    "毛绒玩偶": ("毛绒", "棉花娃娃", "玩偶", "山山兔", "龙泡泡", "团子", "抱枕", "靠枕"),
+    "手办模玩": ("手办", "模型", "模玩", "雕像", "景品", "盲盒"),
+    "亚克力制品": ("亚克力", "压克力", "立牌", "摇摇乐", "流沙砖"),
+    "装饰摆件": ("摆件", "挂件", "钥匙扣", "色纸", "明信片", "挂画", "灯", "桌面装饰"),
+    "日用生活": ("短袖", "卫衣", "服装", "衣服", "裙", "箱包", "书包", "水杯", "马克杯", "餐具", "文具", "笔记本", "鼠标垫", "桌垫", "键帽", "雨伞", "毛巾"),
 }
 
 OPERATOR_ALIASES = {
@@ -57,7 +58,7 @@ def classify_category(text: str) -> str:
     for category, keywords in CATEGORY_PATTERNS.items():
         if any(keyword.lower() in lowered for keyword in keywords):
             return category
-    return "其他周边"
+    return "其他正版周边"
 
 
 def classify_rights(text: str) -> str:
@@ -170,7 +171,8 @@ def build_targeted_query_summary(listings: pd.DataFrame) -> pd.DataFrame:
     summaries: list[dict[str, object]] = []
     for target, group in targeted.groupby("target_operator", dropna=False):
         relevant = group[group["target_relevance"] >= 0.75].copy()
-        numeric = relevant[relevant["numeric_sales_available"]]
+        licensed = relevant[relevant["rights_type"] == "官方/授权"].copy()
+        numeric = licensed[licensed["numeric_sales_available"]]
         total_sales = float(numeric["sales_proxy_min"].sum())
         top_ten_sales = float(numeric[numeric["rank"] <= 10]["sales_proxy_min"].sum())
         summaries.append(
@@ -179,13 +181,15 @@ def build_targeted_query_summary(listings: pd.DataFrame) -> pd.DataFrame:
                 "search_results": len(group),
                 "relevant_results": len(relevant),
                 "search_precision": len(relevant) / max(len(group), 1),
-                "numeric_sales_coverage": len(numeric) / max(len(relevant), 1),
+                "licensed_relevant_results": len(licensed),
+                "licensed_share_of_relevant": len(licensed) / max(len(relevant), 1),
+                "numeric_sales_coverage": len(numeric) / max(len(licensed), 1),
                 "sales_proxy_min_total": total_sales,
                 "sales_proxy_is_lower_bound": bool(numeric["sales_proxy_censored"].any()),
-                "median_price": relevant["price"].median(),
-                "price_p25": relevant["price"].quantile(0.25),
-                "price_p75": relevant["price"].quantile(0.75),
-                "category_breadth": relevant["category"].nunique(),
+                "median_price": licensed["price"].median(),
+                "price_p25": licensed["price"].quantile(0.25),
+                "price_p75": licensed["price"].quantile(0.75),
+                "category_breadth": licensed["category"].nunique(),
                 "official_share": (relevant["rights_type"] == "官方/授权").mean(),
                 "fanmade_share": (relevant["rights_type"] == "同人原创").mean(),
                 "presale_share": (relevant["fulfillment_type"] == "预售/补款").mean(),
@@ -201,6 +205,7 @@ def build_taobao_market_signals(listings: pd.DataFrame, roster: Iterable[str]) -
     baseline = listings[
         (listings["query_scope"] == "market_baseline")
         & (listings["ip_scope"] == "arknights")
+        & (listings["rights_type"] == "官方/授权")
     ].copy()
     associations: list[dict[str, object]] = []
     for _, row in baseline.iterrows():
@@ -274,7 +279,7 @@ def build_taobao_market_signals(listings: pd.DataFrame, roster: Iterable[str]) -
     output.loc[observed_mask, "price_power_score"] = percentile_score(
         output.loc[observed_mask, "median_price"]
     )
-    output["assortment_score"] = (output["category_breadth"] / 6 * 100).clip(upper=100)
+    output["assortment_score"] = (output["category_breadth"] / len(CATEGORY_PATTERNS) * 100).clip(upper=100)
     output["commercial_heat_score"] = (
         0.35 * output["demand_proxy_score"]
         + 0.25 * output["supply_score"]

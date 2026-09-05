@@ -1,0 +1,8 @@
+﻿stage,current_value,gate,status,next_action
+candidate_approval,2.0,2 approved candidates / 1 operator,complete,围绕已批候选开展A/B内容预热
+content_preheat,0.0,>0 tracked impressions,blocked,发布A/B概念内容并记录曝光、点击和落地页UV
+qualified_intent_pool,0.0,>=30 per approved candidate,blocked,获取至少30条知情同意的匿名有效意向
+supplier_validation,0.0,>=3 suppliers per approved candidate,blocked,完成授权证据、MOQ、成本、样品和交期比价
+paid_order_pilot,0.0,>=10 per approved candidate,blocked,仅在候选与供应商通过门禁后，每个方案开展10至20单试点
+fulfillment,0.0,>=90% delivered per approved candidate,blocked,记录打包、发货、签收、取消和退货事件
+post_purchase_review,0.0,>=5 per approved candidate,blocked,回收满意度、质量、交付和复购意愿

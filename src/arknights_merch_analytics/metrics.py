@@ -11,13 +11,15 @@ OPERATOR_PATTERNS = (
     re.compile(r"(?:限定)?干员[「『“\"]([^」』”\"]+)[」』”\"]"),
     re.compile(r"角色[「『“\"]([^」』”\"]+)[」』”\"]"),
 )
+EXCLUDED_OPERATOR_ENTITIES = {"丰川祥子"}
 
 
 def extract_operator(title: str) -> str | None:
     for pattern in OPERATOR_PATTERNS:
         match = pattern.search(str(title))
         if match:
-            return match.group(1).strip()
+            operator = match.group(1).strip()
+            return None if operator in EXCLUDED_OPERATOR_ENTITIES else operator
     return None
 
 

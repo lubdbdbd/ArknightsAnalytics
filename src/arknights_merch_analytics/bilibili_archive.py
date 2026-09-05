@@ -8,7 +8,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from arknights_merch_analytics.metrics import extract_operator, percentile_score
+from arknights_merch_analytics.metrics import (
+    EXCLUDED_OPERATOR_ENTITIES,
+    extract_operator,
+    percentile_score,
+)
 
 
 def classify_bilibili_content(title: str) -> str:
@@ -36,6 +40,10 @@ def build_bilibili_archive(
     if raw_archive.empty:
         return raw_archive.copy()
     frame = raw_archive.drop_duplicates("bvid").copy()
+    invalid_title = frame["title"].astype(str).map(
+        lambda title: any(entity in title for entity in EXCLUDED_OPERATOR_ENTITIES)
+    )
+    frame = frame.loc[~invalid_title].copy()
     frame["published_at"] = pd.to_datetime(frame["published_at"], errors="coerce", utc=True)
     frame = frame[frame["published_at"].notna()].copy()
     timestamp = pd.Timestamp(as_of or datetime.now().astimezone())

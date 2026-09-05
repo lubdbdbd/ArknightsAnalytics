@@ -115,7 +115,7 @@ SQL_REPORT_QUERIES = {
         FROM taobao_public_snapshots
         WHERE query_scope = 'market_baseline'
           AND ip_scope = 'arknights'
-          AND category = '亚克力立牌'
+          AND category = '亚克力制品'
     """,
     "bilibili_content_types": """
         SELECT *

@@ -137,3 +137,33 @@ def test_survey_rejects_inconsistent_price_ladder() -> None:
 
     assert valid.empty
     assert "invalid_price_ladder" in audit.iloc[0]["exclusion_reason"]
+
+
+def test_survey_accepts_anonymous_batch_without_timing() -> None:
+    response = pd.DataFrame(
+        [
+            {
+                "response_id": "REAL-BATCH-001",
+                "respondent_id": "REAL-BATCH-001",
+                "submitted_at": "",
+                "consent": 1,
+                "response_source": "anonymous_questionnaire_batch",
+                "validation_profile": "anonymous_batch_without_timing",
+                "completion_seconds": None,
+                "player_tenure_months": 48,
+                "monthly_merch_budget": 200,
+                "has_purchased_merch": 1,
+                "operator": "能天使",
+                "category": "亚克力制品",
+                "purchase_intent": 4,
+                "acceptable_price": None,
+                "channel": "官方商城",
+                "limited_preference": 4,
+            }
+        ]
+    )
+
+    valid, audit = validate_survey_responses(response)
+
+    assert len(valid) == 1
+    assert audit.iloc[0]["valid"]

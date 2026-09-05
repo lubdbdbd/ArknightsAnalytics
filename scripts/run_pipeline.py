@@ -61,6 +61,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--use-fixture", action="store_true", help="Run with bundled pipeline fixture")
     parser.add_argument("--as-of", default=None, help="ISO timestamp used for reproducible age calculations")
     parser.add_argument("--case-operator", default="新约能天使", help="Operator used for the verifiable selection case")
+    parser.add_argument("--skip-workbook", action="store_true", help="Skip XLSX regeneration")
     return parser.parse_args()
 
 
@@ -227,32 +228,33 @@ def main() -> None:
             sku,
             ROOT / "reports" / "generated" / "selection_case_study.md",
         )
-    write_workbook(
-        operator_heat,
-        erp,
-        sku,
-        ROOT / "reports" / "generated" / "operations_dashboard.xlsx",
-        content_scores,
-        xhs,
-        taobao_listings,
-        taobao_market_signals,
-        content_commerce,
-        targeted_query_summary,
-        tracking_registry,
-        timeseries_metrics,
-        survey_audit,
-        survey_summary,
-        selection_case_evidence,
-        selection_case_categories,
-        bilibili_archive,
-        bilibili_campaign_content,
-        bilibili_campaign_summary,
-        bilibili_content_types,
-        bilibili_yearly_summary,
-        survey_segment_summary,
-        survey_barrier_summary,
-        survey_price_summary,
-    )
+    if not args.skip_workbook:
+        write_workbook(
+            operator_heat,
+            erp,
+            sku,
+            ROOT / "reports" / "generated" / "operations_dashboard.xlsx",
+            content_scores,
+            xhs,
+            taobao_listings,
+            taobao_market_signals,
+            content_commerce,
+            targeted_query_summary,
+            tracking_registry,
+            timeseries_metrics,
+            survey_audit,
+            survey_summary,
+            selection_case_evidence,
+            selection_case_categories,
+            bilibili_archive,
+            bilibili_campaign_content,
+            bilibili_campaign_summary,
+            bilibili_content_types,
+            bilibili_yearly_summary,
+            survey_segment_summary,
+            survey_barrier_summary,
+            survey_price_summary,
+        )
     export_sqlite(
         videos,
         operator_heat,
