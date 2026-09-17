@@ -1,0 +1,75 @@
+{
+  "version": "channel-strategy-v1",
+  "assumption_notice": "渠道定位、费率、折扣、价格带和评分权重均为规划演练假设，不是平台实际收费、合同条款或已执行分销策略。",
+  "weights": {"category": 0.4, "price": 0.2, "replenishment": 0.2, "production": 0.2},
+  "priority_score": 80,
+  "conditional_score": 60,
+  "minimum_unit_margin": 0.15,
+  "price_gap_review_threshold": 0.1,
+  "observation_only_channels": ["二手平台", "其他"],
+  "profiles": [
+    {
+      "id": "official", "channel": "官方商城", "status": "模拟渠道", "price_basis": "retail",
+      "positioning": "完整商品信息与统一品牌服务，探索常规商品及经授权的特色权益",
+      "category_scores": {"亚克力制品": 95, "吧唧（徽章）": 95, "手办模玩": 90, "日用生活": 90, "毛绒玩偶": 95, "装饰摆件": 90, "通行证": 90},
+      "price_min": 10, "price_max": 800, "preferred_replenishment_days": 90,
+      "discount_rate": 0, "channel_fee_rate": 0.03, "refund_rate": 0.05, "variable_cost_per_unit": 5,
+      "offer_plan": "统一商品说明；限定或赠品权益须另行审批",
+      "requirements": ["授权与可售范围确认", "商品及售后说明统一", "长交期商品明确预售约定"]
+    },
+    {
+      "id": "taobao", "channel": "淘宝/天猫", "status": "模拟渠道", "price_basis": "retail",
+      "positioning": "标准化商品信息与可持续补货，比较常规单品和活动档位",
+      "category_scores": {"亚克力制品": 95, "吧唧（徽章）": 95, "手办模玩": 60, "日用生活": 90, "毛绒玩偶": 90, "装饰摆件": 85, "通行证": 85},
+      "price_min": 15, "price_max": 200, "preferred_replenishment_days": 30,
+      "discount_rate": 0.05, "channel_fee_rate": 0.06, "refund_rate": 0.05, "variable_cost_per_unit": 4,
+      "offer_plan": "常规SKU及透明活动折扣，不默认存在平台补贴",
+      "requirements": ["平台资质与授权确认", "库存及预售说明核对", "活动优惠叠加核验"]
+    },
+    {
+      "id": "bilibili", "channel": "B站会员购", "status": "模拟渠道", "price_basis": "retail",
+      "positioning": "围绕角色内容和收藏需求组织商品介绍与预售验证",
+      "category_scores": {"亚克力制品": 90, "吧唧（徽章）": 85, "手办模玩": 100, "日用生活": 65, "毛绒玩偶": 90, "装饰摆件": 95, "通行证": 80},
+      "price_min": 30, "price_max": 1000, "preferred_replenishment_days": 90,
+      "discount_rate": 0, "channel_fee_rate": 0.1, "refund_rate": 0.05, "variable_cost_per_unit": 6,
+      "offer_plan": "收藏展示、制作进度与预售信息，权益内容待验证",
+      "requirements": ["合作资格与授权确认", "预售周期和退款约定", "展示素材与实物一致性核对"]
+    },
+    {
+      "id": "live", "channel": "直播间", "status": "模拟渠道", "price_basis": "retail",
+      "positioning": "适合快速解释卖点、实物展示和组合推荐的候选商品",
+      "category_scores": {"亚克力制品": 95, "吧唧（徽章）": 95, "手办模玩": 35, "日用生活": 90, "毛绒玩偶": 100, "装饰摆件": 85, "通行证": 85},
+      "price_min": 10, "price_max": 150, "preferred_replenishment_days": 25,
+      "discount_rate": 0.1, "channel_fee_rate": 0.12, "refund_rate": 0.05, "variable_cost_per_unit": 4,
+      "offer_plan": "单品或组合演示；套装需另建规格，不能与单品直接比价",
+      "requirements": ["实物展示与卖点核对", "可承接订单及发货能力确认", "佣金赠品与退款成本补录"]
+    },
+    {
+      "id": "popup", "channel": "线下展会或快闪店", "status": "模拟渠道", "price_basis": "retail",
+      "positioning": "现场展示、即时购买和活动体验，评估便携性与备货约束",
+      "category_scores": {"亚克力制品": 100, "吧唧（徽章）": 100, "手办模玩": 30, "日用生活": 75, "毛绒玩偶": 90, "装饰摆件": 85, "通行证": 100},
+      "price_min": 10, "price_max": 150, "preferred_replenishment_days": 25,
+      "discount_rate": 0, "channel_fee_rate": 0.18, "refund_rate": 0.05, "variable_cost_per_unit": 3,
+      "offer_plan": "现场展示与待审批活动权益，不预设已取得限定权",
+      "requirements": ["场地与角色使用授权", "实物库存及运输破损预案", "摊位人工等固定费用另行测算"]
+    },
+    {
+      "id": "crowdfunding", "channel": "众筹", "status": "规划待验证", "price_basis": "retail",
+      "positioning": "高投入商品的意向与供应可行性验证，未开通众筹业务",
+      "category_scores": {"亚克力制品": 30, "吧唧（徽章）": 20, "手办模玩": 100, "日用生活": 45, "毛绒玩偶": 75, "装饰摆件": 55, "通行证": 20},
+      "price_min": 199, "price_max": 1200, "preferred_replenishment_days": 120,
+      "discount_rate": 0, "channel_fee_rate": 0.08, "refund_rate": 0.05, "variable_cost_per_unit": 12,
+      "offer_plan": "意向档位与样品展示，起订量和交付计划待确认",
+      "requirements": ["平台与IP授权资格确认", "样品/起订量/目标金额验证", "未达标退款和延期处置方案"]
+    },
+    {
+      "id": "retail_agent", "channel": "零售代理", "status": "规划待验证", "price_basis": "wholesale",
+      "positioning": "低客单标准件的批发试供，未建立真实代理网络",
+      "category_scores": {"亚克力制品": 95, "吧唧（徽章）": 100, "手办模玩": 20, "日用生活": 80, "毛绒玩偶": 65, "装饰摆件": 70, "通行证": 95},
+      "price_min": 10, "price_max": 80, "preferred_replenishment_days": 20,
+      "discount_rate": 0.3, "channel_fee_rate": 0.02, "refund_rate": 0.05, "variable_cost_per_unit": 2,
+      "offer_plan": "批发供货条件与补货规则待谈判，出货价不是终端零售价",
+      "requirements": ["授权链与代理资质确认", "起订量/回款账期/退换货责任", "终端陈列和实际零售价格信息补充"]
+    }
+  ]
+}

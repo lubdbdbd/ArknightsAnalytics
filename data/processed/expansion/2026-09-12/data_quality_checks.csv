@@ -1,0 +1,27 @@
+﻿check,passed,detail
+official_store_products_unique,True,228
+official_store_products_source_url,True,Every retained row has a source URL
+official_store_variants_unique,True,531
+official_store_variants_source_url,True,Every retained row has a source URL
+operator_reference_unique,True,429
+operator_reference_source_url,True,Every retained row has a source URL
+official_news_unique,True,23
+official_news_source_url,True,Every retained row has a source URL
+bilibili_expanded_archive_unique,True,551
+bilibili_expanded_archive_source_url,True,Every retained row has a source URL
+weibo_expanded_archive_unique,True,115
+weibo_expanded_archive_source_url,True,Every retained row has a source URL
+skland_expanded_entities_unique,True,937
+skland_expanded_entities_source_url,True,Every retained row has a source URL
+variant_product_fk,True,All variants reference collected listings
+variant_count_reconciles,True,Listing counts equal distinct variant rows
+valid_price,True,Unknown is not zero
+endfield_excluded,True,Separate game scope
+no_author_identifiers,True,Only public content metadata and aggregates retained
+B站官号内容_growth,True,去重BV号
+微博官号内容_growth,True,去重帖子ID
+森空岛搜索内容_growth,True,去重文章ID
+官方海外商品档案_growth,True,店铺限定商品ID
+官方海外商品规格_growth,True,店铺限定规格ID
+官方资讯检索样本_growth,True,官方资讯ID
+角色参考主档_growth,True,可获得干员ID

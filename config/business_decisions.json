@@ -1,0 +1,9 @@
+{
+  "version": "business-decisions-v1",
+  "recent_days": 28,
+  "slow_cover_days": 90,
+  "low_sell_through": 0.3,
+  "shortage_rate": 0.02,
+  "service_buffer_days": 7,
+  "assumption_notice": "库存和订单为模拟数据；风险阈值、营销及成本参数属于演练假设。风险金额不是已节省金额，改善建议尚未执行。"
+}

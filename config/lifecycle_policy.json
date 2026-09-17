@@ -1,0 +1,10 @@
+{
+  "version": "lifecycle-v1",
+  "observation_window_days": 28,
+  "weekly_history": 26,
+  "trend_window_days": 7,
+  "trend_min_content": 2,
+  "trend_min_intervals": 3,
+  "trend_change_threshold": 0.2,
+  "scope": "探索性内容生命周期观察；阈值为项目分析假设，未由真实销量校准"
+}

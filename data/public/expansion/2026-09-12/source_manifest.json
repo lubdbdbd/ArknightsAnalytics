@@ -1,0 +1,62 @@
+{
+  "observed_at": "2026-09-11T22:16:49+00:00",
+  "results": {
+    "yostar_us": {
+      "products": 153,
+      "status": "collected"
+    },
+    "gryphline_global": {
+      "products": 75,
+      "status": "collected"
+    },
+    "yostar_news": {
+      "status": "collected",
+      "records": 23
+    },
+    "operators": {
+      "status": "collected",
+      "records": 429
+    },
+    "weibo": {
+      "status": "collected",
+      "records": 100
+    }
+  },
+  "requests": [
+    {
+      "source": "official_catalogs_and_metadata",
+      "url": "https://us.yostar.store/collections/arknights/products.json?limit=250&page=1",
+      "observed_at": "2026-09-11T22:16:43+00:00",
+      "http_status": 200,
+      "response_sha256": "25c8092f6bc7a38ef405344dd7fc0a16f9908c921b1f6960790c7b7bf49bc088"
+    },
+    {
+      "source": "official_catalogs_and_metadata",
+      "url": "https://store.gryphline.com/collections/arknights/products.json?limit=250&page=1",
+      "observed_at": "2026-09-11T22:16:44+00:00",
+      "http_status": 200,
+      "response_sha256": "482d51d7d4d576956ccafb33c7671f65294bcc549560601e67f613011accc43a"
+    },
+    {
+      "source": "official_catalogs_and_metadata",
+      "url": "https://plus.yostar.co.jp/wp-json/wp/v2/posts?search=%E3%82%A2%E3%83%BC%E3%82%AF%E3%83%8A%E3%82%A4%E3%83%84&per_page=100&_fields=id%2Cdate%2Clink%2Ctitle%2Ccategories",
+      "observed_at": "2026-09-11T22:16:46+00:00",
+      "http_status": 200,
+      "response_sha256": "d1e27c093ac775b21a08ee42bab22c70e7eba0dc2e57968e20adfee2633c0806"
+    },
+    {
+      "source": "official_catalogs_and_metadata",
+      "url": "https://api.github.com/repos/Kengxxiao/ArknightsGameData/commits/master",
+      "observed_at": "2026-09-11T22:16:47+00:00",
+      "http_status": 200,
+      "response_sha256": "f46086f54add341feec600b46edb21fc9d9055ca09522e68581c58723a2eeb59"
+    },
+    {
+      "source": "official_catalogs_and_metadata",
+      "url": "https://raw.githubusercontent.com/Kengxxiao/ArknightsGameData/0ef7f952dfd018392200157a5c79a6511ba69122/zh_CN/gamedata/excel/character_table.json",
+      "observed_at": "2026-09-11T22:16:48+00:00",
+      "http_status": 200,
+      "response_sha256": "42708ca01b1938df4e2c3ed9e9efeadbf0e35533411907dadb37b80315e69ae8"
+    }
+  ]
+}

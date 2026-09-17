@@ -1,0 +1,49 @@
+{
+  "version": "gmv-drivers-v1",
+  "assumption_notice": "以下是演练假设，不是观测流量、实验效果、真实销售或需求预测；所有方案采用相同经营周期。",
+  "baseline": {
+    "visitors": 10000,
+    "buyer_conversion": 0.03,
+    "purchase_frequency": 1,
+    "list_basket_value": 120,
+    "discount_rate": 0,
+    "cogs_per_order": 60,
+    "fulfillment_per_order": 8,
+    "gift_per_order": 0,
+    "platform_fee_rate": 0.03,
+    "refund_amount_rate": 0.05,
+    "marketing_spend": 1000,
+    "order_capacity": null
+  },
+  "strategies": [
+    {
+      "id": "bundle",
+      "name": "组合销售",
+      "hypothesis": "代表性购物篮由单品转为套装；金额和成本增加，购买用户转化率假设下降10%。",
+      "overrides": {"list_basket_value": 180, "cogs_per_order": 92, "buyer_conversion": 0.027},
+      "experiment": "比较单品页与套装页，同期随机分配合格用户，核对客单价、转化、单订单贡献及退款。"
+    },
+    {
+      "id": "tier_discount",
+      "name": "阶梯优惠",
+      "hypothesis": "假设代表性购物篮达到满额档，150元享9折；转化率假设提升10%。未模拟全量购物篮分布或优惠叠加。",
+      "overrides": {"list_basket_value": 150, "discount_rate": 0.1, "cogs_per_order": 75, "buyer_conversion": 0.033, "gift_per_order": 2},
+      "experiment": "固定商品与渠道比较优惠档位，记录各档订单数、优惠金额、凑单件数和贡献利润；优惠规则需先核准。"
+    },
+    {
+      "id": "limited_premium",
+      "name": "限量溢价",
+      "hypothesis": "代表性购物篮提价10%，购买用户转化率假设下降至2.5%，假设最多承接250单；不代表真实限量供给。",
+      "overrides": {"list_basket_value": 132, "buyer_conversion": 0.025, "order_capacity": 250},
+      "experiment": "先验证授权、真实限量与供给，再开展价格接受度及小规模意向验证，关注滞销、取消和履约风险。"
+    },
+    {
+      "id": "campaign",
+      "name": "大促节点",
+      "hypothesis": "访客假设增加50%，转化率假设提升20%，购物篮打9折；同时增加推广投入。",
+      "overrides": {"visitors": 15000, "buyer_conversion": 0.036, "discount_rate": 0.1, "marketing_spend": 5000},
+      "experiment": "预先记录活动周期、来源和分组，监测支付、优惠、履约及退款；同期对照，不能把季节性增长都归因于活动。"
+    }
+  ],
+  "conversion_multipliers": [0.8, 1, 1.2]
+}

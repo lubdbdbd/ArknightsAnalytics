@@ -266,7 +266,9 @@ def simulate_erp_operations(
         requested_at = pd.Timestamp(row.order_date) + pd.Timedelta(days=int(rng.integers(2, 16)))
         resolution_days = int(rng.integers(1, 8))
         units = min(int(row.quantity), int(rng.choice([1, 2], p=[0.92, 0.08])))
-        refund_amount = round(float(row.unit_price) * units, 2) if case_type != "exchange" else 0.0
+        # Allocate the discounted merchandise amount; shipping is not refunded by
+        # this simulator. Refunding list price would exceed payment on discounts.
+        refund_amount = round(float(row.net_revenue) * units / int(row.quantity), 2) if case_type != "exchange" else 0.0
         after_sales_rows.append(
             {
                 "case_id": f"AS-{len(after_sales_rows) + 1:06d}",

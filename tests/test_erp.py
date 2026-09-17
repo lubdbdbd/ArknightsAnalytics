@@ -88,3 +88,20 @@ def test_builds_reconciled_erp_tables(tmp_path) -> None:
             """
         ).fetchone()[0]
         assert mismatch == 0
+
+
+def test_simulated_refunds_use_discounted_merchandise_and_never_exceed_payment():
+    responses = pd.DataFrame([{'category': '吧唧（徽章）', 'channel': '官方商城'}])
+    rankings = pd.DataFrame([{'operator': '能天使', 'preference_weight': 3}])
+    tables = simulate_erp_operations(_base_skus(), responses, rankings, days=15, order_count=1000, seed=7)
+    cases = tables['erp_after_sales']
+    assert not cases.empty
+    matched = cases.merge(tables['erp_order_lines'], on=['order_id','sku_id'], validate='one_to_one')
+    discounted = matched.loc[matched['discount_amount'].gt(0) & matched['case_type'].ne('exchange')]
+    assert not discounted.empty
+    expected = (discounted['net_revenue'] * discounted['units'] / discounted['quantity']).round(2)
+    assert (discounted['refund_amount'] - expected).abs().le(.01).all()
+    assert matched.loc[matched['case_type'].eq('exchange'),'refund_amount'].eq(0).all()
+    refunds = cases.groupby('order_id')['refund_amount'].sum()
+    paid = tables['erp_order_headers'].set_index('order_id')['paid_amount']
+    assert refunds.le(paid.reindex(refunds.index) + .01).all()

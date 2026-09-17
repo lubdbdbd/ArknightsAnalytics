@@ -6,6 +6,10 @@ __pycache__/
 htmlcov/
 .env
 tmp/
+frontend/node_modules/
+frontend/dist/
+data/runtime/
+*.log
 *.inspect.ndjson
 data/manual/commercial_pilot/pilot_capture.db*
 backups/commercial_pilot/

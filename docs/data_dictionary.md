@@ -200,10 +200,20 @@
 - `vw_erp_replenishment_queue`：根据缺货、再订货点、采购提前期生成补货优先级。
 - `vw_erp_after_sales_quality`：SKU售后件数、影响数量、退款金额和平均关闭时长。
 - `vw_erp_daily_operations`：按日汇总销量、入库、退货、期末库存和缺货率。
+- `vw_product_master_health`：按品类汇总内部SPU/SKU数量、必填完整率、规则异常和质量分。
+- `vw_public_listing_quality`：按授权状态与维护优先级汇总外部商品质量问题。
+- `vw_product_maintenance_queue`：输出授权、角色、履约、价格和重复快照的待处理任务。
+- `vw_product_category_coverage`：对照内部商品规划、公开正版供给、价格中位数与品类维护动作。
 
 ## ERP 业务表
 
 - `erp_sku_master`：210个SKU的角色、品类、售价、成本、供应商、采购提前期、安全库存和再订货点。
+- `product_catalog_internal`：模拟内部商品主数据，补充SPU/SKU编码、生命周期、毛利率、字段完整率和规则异常。
+- `product_catalog_public`：淘宝公开商品去重档案，保留授权、角色归因、履约、价格异常与质量等级。
+- `product_maintenance_queue`：需要补充授权、角色、履约、价格或重复快照处理的商品维护任务。
+- `product_category_health`：按品类汇总内部SKU、公开商品、正版覆盖、价格差和维护任务。
+- `product_change_log`：商品建档和公开快照首次观测事件，模拟与公开数据分别标记。
+- `product_field_dictionary`：19项商品主数据字段的业务定义与校验规则。
 - `erp_order_headers`：订单日期、渠道、客群、支付/履约状态、商品额、优惠、运费和实付金额。
 - `erp_order_lines`：SKU数量、单价、优惠分摊、净收入、单位成本和明细成本。
 - `erp_inventory_daily`：期初、入库、请求销量、实际销量、缺货、退货、残损、期末、锁定和可售库存。

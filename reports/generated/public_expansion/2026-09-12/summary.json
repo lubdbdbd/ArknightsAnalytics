@@ -1,0 +1,281 @@
+{
+  "run_date": "2026-09-12",
+  "inventory": [
+    {
+      "dataset": "B站官号内容",
+      "unit": "去重BV号",
+      "before": 549,
+      "observed_this_run": 431,
+      "net_new": 2,
+      "after": 551,
+      "use": "历史内容与传播类型分析"
+    },
+    {
+      "dataset": "微博官号内容",
+      "unit": "去重帖子ID",
+      "before": 100,
+      "observed_this_run": 100,
+      "net_new": 15,
+      "after": 115,
+      "use": "近期官方发布与内容互证"
+    },
+    {
+      "dataset": "森空岛搜索内容",
+      "unit": "去重文章ID",
+      "before": 582,
+      "observed_this_run": 395,
+      "net_new": 355,
+      "after": 937,
+      "use": "新增角色与周边主题搜索聚合"
+    },
+    {
+      "dataset": "官方海外商品档案",
+      "unit": "店铺限定商品ID",
+      "before": 0,
+      "observed_this_run": 228,
+      "net_new": 228,
+      "after": 228,
+      "use": "品类与供给结构"
+    },
+    {
+      "dataset": "官方海外商品规格",
+      "unit": "店铺限定规格ID",
+      "before": 0,
+      "observed_this_run": 531,
+      "net_new": 531,
+      "after": 531,
+      "use": "规格、标价、可售状态"
+    },
+    {
+      "dataset": "官方资讯检索样本",
+      "unit": "官方资讯ID",
+      "before": 0,
+      "observed_this_run": 23,
+      "net_new": 23,
+      "after": 23,
+      "use": "筛选上新及活动线索，区分标题匹配与待复核"
+    },
+    {
+      "dataset": "角色参考主档",
+      "unit": "可获得干员ID",
+      "before": 0,
+      "observed_this_run": 429,
+      "net_new": 429,
+      "after": 429,
+      "use": "角色名称、阵营、职业与稀有度治理"
+    }
+  ],
+  "quality_checks": [
+    {
+      "check": "official_store_products_unique",
+      "passed": true,
+      "detail": "228"
+    },
+    {
+      "check": "official_store_products_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "official_store_variants_unique",
+      "passed": true,
+      "detail": "531"
+    },
+    {
+      "check": "official_store_variants_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "operator_reference_unique",
+      "passed": true,
+      "detail": "429"
+    },
+    {
+      "check": "operator_reference_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "official_news_unique",
+      "passed": true,
+      "detail": "23"
+    },
+    {
+      "check": "official_news_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "bilibili_expanded_archive_unique",
+      "passed": true,
+      "detail": "551"
+    },
+    {
+      "check": "bilibili_expanded_archive_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "weibo_expanded_archive_unique",
+      "passed": true,
+      "detail": "115"
+    },
+    {
+      "check": "weibo_expanded_archive_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "skland_expanded_entities_unique",
+      "passed": true,
+      "detail": "937"
+    },
+    {
+      "check": "skland_expanded_entities_source_url",
+      "passed": true,
+      "detail": "Every retained row has a source URL"
+    },
+    {
+      "check": "variant_product_fk",
+      "passed": true,
+      "detail": "All variants reference collected listings"
+    },
+    {
+      "check": "variant_count_reconciles",
+      "passed": true,
+      "detail": "Listing counts equal distinct variant rows"
+    },
+    {
+      "check": "valid_price",
+      "passed": true,
+      "detail": "Unknown is not zero"
+    },
+    {
+      "check": "endfield_excluded",
+      "passed": true,
+      "detail": "Separate game scope"
+    },
+    {
+      "check": "no_author_identifiers",
+      "passed": true,
+      "detail": "Only public content metadata and aggregates retained"
+    },
+    {
+      "check": "B站官号内容_growth",
+      "passed": true,
+      "detail": "去重BV号"
+    },
+    {
+      "check": "微博官号内容_growth",
+      "passed": true,
+      "detail": "去重帖子ID"
+    },
+    {
+      "check": "森空岛搜索内容_growth",
+      "passed": true,
+      "detail": "去重文章ID"
+    },
+    {
+      "check": "官方海外商品档案_growth",
+      "passed": true,
+      "detail": "店铺限定商品ID"
+    },
+    {
+      "check": "官方海外商品规格_growth",
+      "passed": true,
+      "detail": "店铺限定规格ID"
+    },
+    {
+      "check": "官方资讯检索样本_growth",
+      "passed": true,
+      "detail": "官方资讯ID"
+    },
+    {
+      "check": "角色参考主档_growth",
+      "passed": true,
+      "detail": "可获得干员ID"
+    }
+  ],
+  "tables": {
+    "official_store_products": {
+      "rows": 228,
+      "fields": 23
+    },
+    "official_store_variants": {
+      "rows": 531,
+      "fields": 20
+    },
+    "operator_reference": {
+      "rows": 429,
+      "fields": 14
+    },
+    "official_news": {
+      "rows": 23,
+      "fields": 8
+    },
+    "bilibili_new_observations": {
+      "rows": 431,
+      "fields": 16
+    },
+    "bilibili_expanded_archive": {
+      "rows": 551,
+      "fields": 19
+    },
+    "weibo_new_observations": {
+      "rows": 100,
+      "fields": 11
+    },
+    "weibo_expanded_archive": {
+      "rows": 115,
+      "fields": 11
+    },
+    "skland_search_observations": {
+      "rows": 777,
+      "fields": 17
+    },
+    "skland_new_entities": {
+      "rows": 395,
+      "fields": 14
+    },
+    "skland_expanded_entities": {
+      "rows": 937,
+      "fields": 14
+    },
+    "official_store_category_summary": {
+      "rows": 31,
+      "fields": 10
+    },
+    "variant_operator_candidates": {
+      "rows": 406,
+      "fields": 7
+    },
+    "data_expansion_inventory": {
+      "rows": 7,
+      "fields": 7
+    },
+    "data_quality_checks": {
+      "rows": 26,
+      "fields": 3
+    }
+  },
+  "skland_query_observations": 777,
+  "skland_rejected_nonmatching": 12,
+  "skland_baseline_raw_unique_hits": 830,
+  "merch_topic_unique_content": 19,
+  "official_news_explicit_title_matches": 11,
+  "sources": {
+    "bilibili_manifest.json": "a2a2d440c806799c057d20bbabc85305776ce159a649dec95fa3d22dd7a271ac",
+    "bilibili_observations.json": "d887ee17afee1e2648a7181c3aeb6bf2a294e8da18a3f1743179765b5bc4d04e",
+    "currency_evidence.json": "aeb7bd7c9660dacb6e9a30a742dedf16961cc9e389e36adbdd528db2610f6376",
+    "gamedata_commit.json": "067c79a3b33c6cc079373655bca6cba194c2cc18db1ef1fed5e1496d8e112cf9",
+    "gryphline_global.json": "6b6c28686b19d00954d0b55e597dd345ffa3e193f392ec5a66f4b88436b8a5e2",
+    "operator_metadata.json": "ffadf6b0c3c17347d8395e8bccd19cf662a58d33b6b3b1edc719229edc086c3a",
+    "skland_manifest.json": "18c08276c2a1754717d978fc53ddba86bf648f0a75a25d2be6016314a836f947",
+    "skland_search_observations.json": "52d73fde4fa0926243ddb1f3f5bfdcfbcb0507ba6a375dbc06a1fe3348c8dc5b",
+    "source_manifest.json": "c25af71bbcb9847c77f82318ca2049ca417a5e04074f54185fb6c35810535d37",
+    "weibo_observations.json": "3333d77af326d2fa4f9b47d8706eb1496d4cbdb2517eda9d11f97cbd59979f71",
+    "yostar_news.json": "158e823a7c80ddb24b2e522479cf2c6ba6a9d21e92b536edf52a0deefda6f464",
+    "yostar_us.json": "03a0f111b3cd435d93516a18156014e29a8954b2647ae7b20b983bd759ca56a4"
+  }
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "source_url": "https://us.yostar.store",
+    "http_status": 200,
+    "evidence": [
+      "Shopify.currency = {\"active\":\"USD\",\"rate\":\"1.0\"};",
+      "\"currency\":\"USD\"",
+      "\"currency\":\"USD\""
+    ]
+  },
+  {
+    "source_url": "https://store.gryphline.com",
+    "http_status": 200,
+    "evidence": [
+      "Shopify.currency = {\"active\":\"USD\",\"rate\":\"1.0\"};",
+      "\"currency\":\"USD\""
+    ]
+  }
+]
