@@ -223,7 +223,7 @@ def main() -> None:
     document = SimpleDocTemplate(
         str(OUTPUT), pagesize=A4, rightMargin=18 * mm, leftMargin=18 * mm,
         topMargin=18 * mm, bottomMargin=22 * mm, title="明日方舟周边用户需求调研问卷",
-        author="ConstantineChenn",
+        author="lubdbdbd",
     )
     story = [
         Paragraph("博士，想听听你对《明日方舟》周边的想法", styles["title"]),

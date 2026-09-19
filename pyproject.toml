@@ -9,7 +9,7 @@ description = "Arknights IP merchandise selection and product operations analyti
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-authors = [{name = "ConstantineChenn"}]
+authors = [{name = "lubdbdbd"}]
 dependencies = [
   "numpy>=2.0,<3",
   "pandas>=2.2,<3",
