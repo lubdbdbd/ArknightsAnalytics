@@ -242,7 +242,5 @@ def render_channel_strategy(report):
            f"品类适配{weights['category']:.0%}、目录价格带{weights['price']:.0%}、补货周期{weights['replenishment']:.0%}、生产风险代理{weights['production']:.0%}；权重是人工规划假设。",
            f"单件贡献率低于{policy['minimum_unit_margin']:.0%}的方案先进入成本复核；适配{policy['priority_score']}分及以上进入优先评审，{policy['conditional_score']}分及以上为条件配置，其余暂缓。优先评审不代表获批上架。",
            f"同SKU同零售价口径的候选中，价差达到{policy['price_gap_review_threshold']:.0%}的共有{summary['price_review_pairs']}组渠道对，均为规划复核项，不是已发生的价格冲突。",'',
-           '## 证据与执行边界','',*[f'- {s}' for s in report['limitations']], '',
-           '## 简历补充','',
-           f"基于7类模拟订单渠道开展商品结构与价格分析，结合品类、价格带、补货周期及生产风险建立{summary['sku_count']}个SKU×{summary['planning_channels']}类规划渠道的适配矩阵，形成{summary['sku_channel_evaluations']:,}条评估；区分零售与批发价格口径，设置单位贡献及跨渠道价差复核规则，输出差异化商品配置候选与渠道准入清单。众筹及零售代理为待验证规划。",'']
+           '## 证据与执行边界','',*[f'- {s}' for s in report['limitations']], '']
     return '\n'.join(text)

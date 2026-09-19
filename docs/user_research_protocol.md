@@ -1,6 +1,6 @@
 # 匿名用户购买意愿调研方案
 
-> 可直接投放的25题问卷、跳题逻辑、配额、三阶段执行和面试口径见 `docs/derivative_merch_user_questionnaire.md`；机器可读题目配置见 `config/survey_questionnaire.json`。
+> 可直接投放的25题问卷、跳题逻辑、配额和三阶段执行见 `docs/derivative_merch_user_questionnaire.md`；机器可读题目配置见 `config/survey_questionnaire.json`。
 
 ## 模拟问卷数据
 

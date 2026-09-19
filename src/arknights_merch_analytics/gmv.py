@@ -238,7 +238,5 @@ def render_gmv_report(report):
             *[f"- {r['strategy']}，转化假设为预设的{r['conversion_multiplier']:.0%}：GMV较基准增加{r['gmv_change']:,.2f}元，贡献利润变化{r['contribution_change']:,.2f}元。需要验证额外订单能否覆盖优惠与推广成本。" for r in report['risk_examples']], '',
             '## 真实验证方案','',*[f"- **{r['name']}**：{r['experiment']}" for r in report['strategies']], '',
             '## 数据缺口与退款边界','',*[f'- {text}' for text in o['missing_data']],
-            f"- 旧售后快照有{o['refund_audit']['orders_exceeding_cash']}个订单的已关闭退款超过含运费实付，暂不出具扣退款净销售或实测利润。",'',
-            '## 简历补充','',
-            f"基于{s['order_count']:,}张模拟订单，按支付订单数与商品客单价拆解GMV，对连续两个28日窗口进行变化贡献分析；构建组合销售、阶梯优惠、限量溢价及大促4类营销方案，开展12组转化假设敏感性测算，联动折扣、成本、退款及承接容量评估成交与贡献利润，输出实验方案和数据补采要求。",'']
+            f"- 旧售后快照有{o['refund_audit']['orders_exceeding_cash']}个订单的已关闭退款超过含运费实付，暂不出具扣退款净销售或实测利润。",'']
     return '\n'.join(lines)

@@ -290,9 +290,5 @@ def render_lifecycle(report):
              '## 逐角色结论', '', '|角色|事件阶段|内容信号|最近直接内容|独立内容|复采区间|', '|---|---|---|---|---:|---:|']
     for r in report['operators']:
         lines.append(f"|{r['operator']}|{r['stage']}|{r['content_signal']}|{r['last_direct_publication'] or '缺失'}|{r['direct_content_count']}|{r['snapshot_interval_count']}|")
-    lines += ['', '## 可写入简历的补充', '',
-              f"建立覆盖{summary['operator_count']}名角色的生命周期观察框架，区分内容发布时间、指标采集时间与角色事件；"
-              f"生成{summary['weekly_rows']}条角色周记录，关联{summary['events']}条直接宣传事件，"
-              '对同一内容复采计算增量，并设置连续观察门槛与证据缺口清单，为分阶段选品验证提供依据。', '',
-              '周记录为派生分析行，不是新增采集数据；未形成已验证的需求增长或衰退结论。', '']
+    lines += ['', '周记录为派生分析行，不是新增采集数据；未形成已验证的需求增长或衰退结论。', '']
     return '\n'.join(lines)

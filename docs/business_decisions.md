@@ -55,5 +55,3 @@ ROI复用config/gmv_scenarios.json中的基准及4类策略假设。原退款快
 - [Shopify库存公式](https://www.shopify.com/blog/inventory-formulas)
 - [Shopify客户获取成本与价值口径](https://www.shopify.com/blog/customer-acquisition-cost)
 
-## 简历表述
-商业数据决策：基于210个模拟SKU、18,900条日库存快照，核对订单请求、采购入库与库存流量，建立售出占比、库存周转天数及可售天数分析；识别48个库存覆盖待复核SKU和3个供给受限SKU，将经营信号转化为补货节奏、首批数量及商品规格的验证建议，并结合5组营销情景比较ROI与盈亏平衡条件。
