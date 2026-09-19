@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "arknights-analytics"
 version = "0.1.0"
-description = "Arknights IP merchandise selection and product operations analytics platform"
+description = "Operations workbench for licensed Arknights merchandise: demand signals, product master data, and ERP-style diagnostics"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
